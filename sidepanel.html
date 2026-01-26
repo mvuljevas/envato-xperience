@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Envato Previews Frame Remover</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Noto+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            width: 100%;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans', sans-serif;
+            font-size: 14px;
+            background: #ffffff;
+            color: #333;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidepanel-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            width: 100%;
+        }
+
+        header {
+            background: #262626;
+            padding: 30px 20px 20px 20px;
+            text-align: center;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 20px;
+            font-weight: 300;
+            cursor: pointer;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #ffffff;
+        }
+
+        .logo {
+            width: 110px;
+            height: auto;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 18px;
+        }
+
+        /* Tabs Navigation */
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 0;
+            padding: 4px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            font-family: 'Oswald', sans-serif;
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            border-radius: 0;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn.active {
+            background: #ffffff;
+            color: #764ba2;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            background: #ffffff;
+            overflow-y: auto;
+        }
+
+        .tab-panel {
+            display: none;
+            padding: 20px;
+            animation: slideUp 0.3s ease;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Shared Components */
+        .card {
+            background: #fdfdfd;
+            padding: 15px;
+            border-radius: 0;
+            border: 1px solid #f0f0f0;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        }
+
+        .status-text {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 15px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 13px;
+        }
+
+        button.main-action {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, #82b641 0%, #6fab35 100%);
+            color: white;
+            border: none;
+            border-radius: 0;
+            cursor: pointer;
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(130, 182, 65, 0.3);
+        }
+
+        button.main-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(130, 182, 65, 0.4);
+        }
+
+        button.main-action:active {
+            transform: translateY(0);
+        }
+
+        /* Settings specific */
+        .settings-header {
+            font-family: 'Oswald', sans-serif;
+            font-size: 13px;
+            color: #adb5bd;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            border-bottom: 1px solid #f0f0f0;
+            padding-bottom: 5px;
+        }
+
+        .about-info {
+            font-size: 12px;
+            color: #7d8185;
+            line-height: 1.6;
+        }
+
+        .about-info p {
+            margin-bottom: 8px;
+        }
+
+        .about-info strong {
+            color: #495057;
+        }
+
+        /* Switch Styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e2e5e9;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        input:checked+.slider {
+            background-color: #82b641;
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Footer */
+        .footer-banner {
+            background: #fafbfc;
+            padding: 15px 12px;
+            text-align: center;
+            font-size: 10px;
+            color: #c1c5c9;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-top: 1px solid #f5f6f7;
+            flex-shrink: 0;
+        }
+
+        /* Not Envato UI */
+        .not-envato-container {
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .not-envato-container img {
+            width: 100%;
+            height: auto;
+            opacity: 1;
+        }
+
+        .not-envato-container h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 15px;
+            color: #868e96;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .not-envato-container p {
+            font-size: 11px;
+            color: #adb5bd;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="sidepanel-container">
+        <header>
+            <button id="closePanel" class="close-btn" title="Close Panel">&times;</button>
+            <img src="images/envato-logo-dark.svg" alt="Envato Logo" class="logo">
+            <h1>Frame Remover</h1>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="action">Action</button>
+                <button class="tab-btn" data-tab="settings">Settings</button>
+            </div>
+        </header>
+
+        <div class="content-area">
+            <!-- Action Tab -->
+            <div id="actionTab" class="tab-panel active">
+                <!-- Normal UI -->
+                <div id="envatoControls">
+                    <div class="card">
+                        <p class="status-text">
+                            Envato Preview detected! Ready to remove the frame and redirect you.
+                        </p>
+                        <button id="removeNow" class="main-action">Remove Frame</button>
+                    </div>
+                </div>
+
+                <!-- Not Envato UI -->
+                <div id="notEnvatoMessage" class="not-envato-container" style="display: none;">
+                    <img src="images/not_envato.png" alt="Not an Envato Preview Page">
+                    <h2>Not an Envato Preview Page</h2>
+                    <p>This extension only works on ThemeForest and CodeCanyon preview pages.</p>
+                </div>
+            </div>
+
+            <!-- Settings Tab -->
+            <div id="settingsTab" class="tab-panel">
+                <h3 class="settings-header">General Settings</h3>
+                <div class="card control-group">
+                    <label for="autoRemove">Auto Remove</label>
+                    <label class="switch">
+                        <input type="checkbox" id="autoRemove">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <h3 class="settings-header">About</h3>
+                <div class="card about-info">
+                    <p><strong>Version:</strong> 1.0.0</p>
+                    <p>Automatically redirects ThemeForest and CodeCanyon previews to their actual content, saving you
+                        from annoying frames.</p>
+                    <p style="margin-top: 10px; font-style: italic; color: #764ba2;">Made with &hearts; for Envato
+                        users.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-banner">
+            ThemeForest &bull; CodeCanyon
+        </div>
+    </div>
+
+    <script src="sidepanel.js"></script>
+</body>
+
+</html>

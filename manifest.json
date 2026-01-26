@@ -1,0 +1,49 @@
+{
+    "manifest_version": 3,
+    "name": "Envato Frame Remover",
+    "version": "1.0.0",
+    "description": "Remove the preview iframe from ThemeForest and CodeCanyon.",
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "permissions": [
+        "storage",
+        "activeTab"
+    ],
+    "host_permissions": [
+        "*://preview.themeforest.net/*",
+        "*://preview.codecanyon.net/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "action": {
+        "default_title": "Toggle Frame Remover"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "sidepanel.html",
+                "sidepanel.js",
+                "images/*",
+                "not_envato.png"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}
