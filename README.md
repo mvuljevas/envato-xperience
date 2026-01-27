@@ -1,6 +1,8 @@
-![NoFrameVato](images/github-noframevato.png)
-
 # NoFrameVato
+
+<p align="center">
+  <img src="images/github-noframevato.png" alt="NoFrameVato" />
+</p>
 
 A Chrome extension that seamlessly removes preview iframes from Envato marketplaces (ThemeForest, CodeCanyon) and redirects you directly to the actual preview content. It features a modern, unobtrusive floating control panel injected directly into the page.
 
