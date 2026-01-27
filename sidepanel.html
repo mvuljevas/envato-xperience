@@ -24,7 +24,7 @@
         <h1>Frame Remover</h1>
         <div class="tabs">
           <div class="tab-glider"></div>
-          <button class="tab-btn active" data-tab="action">Action</button>
+          <button class="tab-btn active" data-tab="action">Status</button>
           <button class="tab-btn" data-tab="settings">Settings</button>
         </div>
       </header>
@@ -37,7 +37,7 @@
             <div class="card">
               <p class="status-text">
                 Envato Preview detected! Ready to remove the frame and redirect
-                you.
+                you to the real page.
               </p>
               <button id="removeNow" class="main-action">Remove Frame</button>
             </div>
@@ -46,8 +46,7 @@
           <!-- Not Envato UI -->
           <div
             id="notEnvatoMessage"
-            class="not-envato-container"
-            style="display: none"
+            class="not-envato-container hidden"
           >
             <img src="images/not_envato.png" alt="Not an Envato Preview Page" />
             <h2>Not an Envato Preview Page</h2>
@@ -75,9 +74,6 @@
             <p>
               Automatically redirects ThemeForest and CodeCanyon previews to
               their actual content, saving you from annoying frames.
-            </p>
-            <p style="margin-top: 10px; font-style: italic; color: #764ba2">
-              Made with &hearts; for Envato users.
             </p>
           </div>
         </div>

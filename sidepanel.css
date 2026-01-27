@@ -325,8 +325,12 @@ input:checked + .slider:before {
   text-transform: uppercase;
 }
 
-.not-envato-container p {
-  font-size: 11px;
-  color: #adb5bd;
-  line-height: 1.5;
+.hidden {
+  display: none !important;
+}
+
+.made-with-love {
+  margin-top: 10px;
+  font-style: italic;
+  color: #764ba2;
 }

@@ -18,13 +18,7 @@ function createPanel() {
   // Create the host for the Shadow DOM
   panelContainer = document.createElement("div");
   panelContainer.id = "envato-frame-remover-root";
-  panelContainer.style.all = "initial"; // Reset inherited styles from the page
-  panelContainer.style.zIndex = "2147483647";
-  panelContainer.style.position = "fixed"; // Ensure it stays in place
-  panelContainer.style.top = "0";
-  panelContainer.style.left = "0";
-  // We don't set width/height here to avoid blocking clicks on the page when closed
-  // The shadow DOM content usually handles the visible area
+  // Styles handled by content.css (:host)
 
   // Attach Shadow DOM
   const shadow = panelContainer.attachShadow({ mode: "open" }); // 'open' allows easier debugging/access if needed
@@ -34,30 +28,10 @@ function createPanel() {
   wrapper.id = "panel-wrapper";
 
   // Define styles for the shadow DOM content
-  const style = document.createElement("style");
-  style.textContent = `
-        #panel-wrapper {
-            position: fixed;
-            top: 0;
-            right: -340px;
-            width: 320px;
-            height: 100vh;
-            background: #ffffff;
-            box-shadow: -5px 0 25px rgba(0,0,0,0.15);
-            z-index: 2147483647;
-            transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            display: block;
-        }
-        #panel-wrapper.visible {
-            right: 0;
-        }
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-        }
-    `;
+  // Link to the external CSS file
+  const link = document.createElement("link");
+  link.setAttribute("rel", "stylesheet");
+  link.setAttribute("href", chrome.runtime.getURL("content.css"));
 
   // Create the iframe
   const iframe = document.createElement("iframe");
@@ -66,7 +40,7 @@ function createPanel() {
 
   // Assemble the DOM
   wrapper.appendChild(iframe);
-  shadow.appendChild(style);
+  shadow.appendChild(link);
   shadow.appendChild(wrapper);
   document.body.appendChild(panelContainer);
 

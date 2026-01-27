@@ -1,0 +1,34 @@
+:host {
+    all: initial;
+    /* Reset inherited styles from the page */
+    z-index: 2147483647;
+    position: fixed;
+    /* Ensure it stays in place */
+    top: 0;
+    left: 0;
+    /* We don't set width/height here to avoid blocking clicks on the page when closed */
+}
+
+#panel-wrapper {
+    position: fixed;
+    top: 0;
+    right: -340px;
+    width: 320px;
+    height: 100vh;
+    background: #ffffff;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+    z-index: 2147483647;
+    transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    display: block;
+}
+
+#panel-wrapper.visible {
+    right: 0;
+}
+
+iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}

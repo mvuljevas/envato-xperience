@@ -58,11 +58,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     activeTab.url.includes('preview.codecanyon.net'));
 
             if (isEnvatoSite) {
-                if (envatoControls) envatoControls.style.display = 'block';
-                if (notEnvatoMessage) notEnvatoMessage.style.display = 'none';
+                if (envatoControls) envatoControls.classList.remove('hidden');
+                if (notEnvatoMessage) notEnvatoMessage.classList.add('hidden');
             } else {
-                if (envatoControls) envatoControls.style.display = 'none';
-                if (notEnvatoMessage) notEnvatoMessage.style.display = 'block';
+                if (envatoControls) envatoControls.classList.add('hidden');
+                if (notEnvatoMessage) notEnvatoMessage.classList.remove('hidden');
             }
         });
     }
