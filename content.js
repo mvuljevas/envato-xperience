@@ -31,7 +31,6 @@ function createPanel() {
             box-shadow: -5px 0 25px rgba(0,0,0,0.15);
             z-index: 2147483647;
             transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-            border-left: 1px solid rgba(0,0,0,0.05);
         }
         #panel-wrapper.visible {
             right: 0;
@@ -93,7 +92,6 @@ function createPanelAccessible() {
         box-shadow: -5px 0 25px rgba(0,0,0,0.15);
         z-index: 2147483647;
         transition: right 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        border-left: 1px solid rgba(0,0,0,0.05);
         display: block !important;
     `;
 
