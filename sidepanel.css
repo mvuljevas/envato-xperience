@@ -1,0 +1,332 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #ffffff;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 14px;
+  height: 100vh;
+  margin: 0;
+  overflow-x: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+.sidepanel-container {
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+}
+
+header {
+  background: #262626;
+  flex-shrink: 0;
+  padding: 30px 20px 20px 20px;
+  position: relative;
+  text-align: center;
+}
+
+.close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 20px;
+  font-weight: 300;
+  line-height: 1;
+  position: absolute;
+  right: 15px;
+  top: 10px;
+  transition: color 0.2s;
+}
+
+.close-btn:hover {
+  color: #ffffff;
+}
+
+.logo {
+  height: auto;
+  margin-bottom: 0;
+  width: 160px;
+}
+
+h1 {
+  color: #ffffff;
+  font-family: "Oswald", sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  left: 27px;
+  letter-spacing: 0;
+  margin-bottom: 18px;
+  position: relative;
+  text-transform: uppercase;
+  top: -10px;
+}
+
+/* Tabs Navigation */
+.tabs {
+  background: rgba(0, 0, 0, 0.2);
+  /* Darker inset track */
+  border-radius: 30px;
+  display: flex;
+  padding: 4px;
+  /* Slightly more padding for the 'track' feel */
+  position: relative;
+  margin-bottom: 20px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+  /* Inset shadow for depth */
+}
+
+.tab-btn {
+  background: transparent;
+  border-radius: 25px;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  flex: 1;
+  font-family: "Oswald", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  padding: 10px;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+  z-index: 2;
+  position: relative;
+}
+
+.tab-btn.active {
+  background: transparent;
+  box-shadow: none;
+  color: #262626;
+}
+
+.tab-glider {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  /* Use top/bottom instead of height calc for safety */
+  left: 4px;
+  width: calc(50% - 4px);
+  /* Height is implicit via top/bottom */
+  background: #ffffff !important;
+  /* Force white background */
+  border-radius: 25px;
+  /* Snappy spring animation */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  /* Slightly stronger shadow */
+  pointer-events: none;
+  /* Ensure clicks pass through to buttons if z-index is weird */
+}
+
+/* When the container says we're on the second tab, move the glider */
+.tabs.on-second-tab .tab-glider {
+  transform: translateX(100%);
+}
+
+/* Content Area */
+.content-area {
+  background: #ffffff;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.tab-panel {
+  animation: slideUp 0.3s ease;
+  display: none;
+  padding: 20px;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Shared Components */
+.card {
+  background: #fdfdfd;
+  border-radius: 0;
+  border: 1px solid #f0f0f0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+  margin-bottom: 15px;
+  padding: 15px;
+}
+
+.status-text {
+  color: #6c757d;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.control-group {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+label {
+  color: #495057;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+button.main-action {
+  background: linear-gradient(135deg, #82b641 0%, #6fab35 100%);
+  border-radius: 0;
+  border: none;
+  box-shadow: 0 4px 15px rgba(130, 182, 65, 0.3);
+  color: white;
+  cursor: pointer;
+  font-family: "Oswald", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 14px 20px;
+  text-transform: uppercase;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  width: 100%;
+}
+
+button.main-action:hover {
+  box-shadow: 0 8px 20px rgba(130, 182, 65, 0.4);
+  transform: translateY(-2px);
+}
+
+button.main-action:active {
+  transform: translateY(0);
+}
+
+/* Settings specific */
+.settings-header {
+  border-bottom: 1px solid #f0f0f0;
+  color: #adb5bd;
+  font-family: "Oswald", sans-serif;
+  font-size: 13px;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+  padding-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.about-info {
+  color: #7d8185;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.about-info p {
+  margin-bottom: 8px;
+}
+
+.about-info strong {
+  color: #495057;
+}
+
+/* Switch Styling */
+.switch {
+  display: inline-block;
+  height: 20px;
+  position: relative;
+  width: 40px;
+}
+
+.switch input {
+  height: 0;
+  opacity: 0;
+  width: 0;
+}
+
+.slider {
+  background-color: #e2e5e9;
+  border-radius: 20px;
+  bottom: 0;
+  cursor: pointer;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: 0.4s;
+}
+
+.slider:before {
+  background-color: white;
+  border-radius: 50%;
+  bottom: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  content: "";
+  height: 14px;
+  left: 3px;
+  position: absolute;
+  transition: 0.4s;
+  width: 14px;
+}
+
+input:checked + .slider {
+  background-color: #82b641;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
+/* Footer */
+.footer-banner {
+  background: #fafbfc;
+  border-top: 1px solid #f5f6f7;
+  color: #c1c5c9;
+  flex-shrink: 0;
+  font-size: 10px;
+  letter-spacing: 1px;
+  padding: 15px 12px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Not Envato UI */
+.not-envato-container {
+  padding: 10px 0;
+  text-align: center;
+}
+
+.not-envato-container img {
+  height: auto;
+  opacity: 1;
+  width: 100%;
+}
+
+.not-envato-container h2 {
+  color: #868e96;
+  font-family: "Oswald", sans-serif;
+  font-size: 15px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.not-envato-container p {
+  font-size: 11px;
+  color: #adb5bd;
+  line-height: 1.5;
+}

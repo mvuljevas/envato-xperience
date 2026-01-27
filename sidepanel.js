@@ -20,11 +20,25 @@ document.addEventListener('DOMContentLoaded', function () {
     /**
      * Tab Switching Logic
      */
-    tabButtons.forEach(button => {
+    const tabsContainer = document.querySelector('.tabs');
+    
+    tabButtons.forEach((button, index) => {
         button.addEventListener('click', () => {
             const tabId = button.getAttribute('data-tab');
+            
+            // Visual Update
             tabButtons.forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
+            
+            // Move Glider
+            // Assuming index 0 is first tab, index 1 is second
+            if (index === 1) {
+                tabsContainer.classList.add('on-second-tab');
+            } else {
+                tabsContainer.classList.remove('on-second-tab');
+            }
+
+            // Content Update
             tabPanels.forEach(panel => {
                 panel.classList.remove('active');
                 if (panel.id === tabId + 'Tab') panel.classList.add('active');
