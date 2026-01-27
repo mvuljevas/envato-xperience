@@ -1,14 +1,15 @@
 # NoFrameVato
 
-A Chrome extension that removes preview iframes from Envato marketplaces (preview.themeforest.net, preview.codecanyon.net) and redirects directly to the actual preview content.
+A Chrome extension that seamlessly removes preview iframes from Envato marketplaces (ThemeForest, CodeCanyon) and redirects you directly to the actual preview content. It features a modern, unobtrusive floating control panel injected directly into the page.
 
 ## Features
 
-- **Auto-Remove Mode**: Automatically removes preview frames when enabled (default)
-- **Manual Trigger**: Remove frames on-demand via the extension popup
-- **Smart Detection**: Specifically targets Envato's `.full-screen-preview__frame` container
-- **URL Validation**: Ensures safe redirects with protocol validation
-- **Error Handling**: Comprehensive error handling and logging for debugging
+- **Auto-Remove Mode**: Automatically removes preview frames on visit (enabled by default).
+- **Floating Control Panel**: A sleek, non-intrusive side panel to manage settings on the fly.
+- **Premium UI**: "Glassmorphism" design with smooth, switch-like animations.
+- **Smart Detection**: Specifically targets Envato's `.full-screen-preview__frame` container.
+- **Safe Redirects**: Validates URLs before redirecting to ensure safety.
+- **Shadow DOM Isolation**: The UI is encapsulated in Shadow DOM to prevent style conflicts with the host page.
 
 ## Installation
 
@@ -18,42 +19,26 @@ A Chrome extension that removes preview iframes from Envato marketplaces (previe
    ```bash
    git clone https://github.com/mvuljevas/noframevato.git
    ```
-
-2. Open Chrome and navigate to `chrome://extensions/`
-
-3. Enable "Developer mode" (toggle in top-right corner)
-
-4. Click "Load unpacked" and select the `noframevato` folder
-
-5. The extension icon should appear in your toolbar
+2. Open Chrome and navigate to `chrome://extensions/`.
+3. Enable **Developer mode** (toggle in top-right corner).
+4. Click **Load unpacked** and select the `noframevato` folder.
 
 ## Usage
 
-### Auto-Remove (Default)
-
-By default, the extension automatically removes preview frames when you visit preview.themeforest.net or preview.codecanyon.net preview pages. The page will redirect to the actual preview content.
-
-### Manual Control
-
-1. Click the extension icon in your toolbar
-2. Toggle "Auto Remove" on/off as needed
-3. Use "Remove Frame Now" button to manually trigger frame removal on the current page
-
-## How It Works
-
-The extension:
-1. Detects the Envato preview frame container (`.full-screen-preview__frame`)
-2. Locates the iframe within the container
-3. Validates the iframe's source URL
-4. Redirects the page to the actual preview content
-5. Falls back to removing the container if no valid iframe is found
+- **Auto-Remove**: Just browse ThemeForest or CodeCanyon. Preview frames vanish automatically!
+- **Manual Control**: Click the extension icon to toggle the floating panel. From there, you can:
+    - Perform a manual frame removal.
+    - Toggle the "Auto Remove" setting.
 
 ## Technical Details
 
-- **Manifest Version**: 3
-- **Permissions**: `storage`, `activeTab`
-- **Host Permissions**: `preview.themeforest.net`, `preview.codecanyon.net`
-- **Content Script**: Runs at `document_idle` for optimal performance
+- **Manifest V3**: Compliant with the latest Chrome Extension standards.
+- **Architecture**:
+    - `content.js`: Handles logic and Shadow DOM injection.
+    - `content.css`: Styles for the panel container.
+    - `sidepanel.html/css/js`: The UI implementation loaded inside the Shadow DOM iframe.
+    - `background.js`: Orchestration and event handling.
+- **Permissions**: Minimal permissions (`storage`, `activeTab`).
 
 ## Development
 
@@ -62,23 +47,20 @@ The extension:
 ```
 noframevato/
 ├── manifest.json       # Extension configuration
-├── content.js          # Main frame removal logic
-├── popup.html          # Extension popup UI
-├── popup.js            # Popup interaction handler
-├── icons/              # Extension icons
+├── background.js       # Service worker
+├── content.js          # Injection logic
+├── content.css         # Container styles
+├── sidepanel.html      # Panel Structure
+├── sidepanel.css       # Panel Styles
+├── sidepanel.js        # Panel Logic
+├── icons/              # Assets
 └── README.md           # This file
 ```
 
-### Key Functions
+## Credits
 
-- `removeFrame()`: Main logic to detect and remove preview frames
-- `isValidUrl()`: Validates URLs before redirecting
-- `initialize()`: Sets up the extension based on user preferences
+Crafted with love in 🇺🇾 by [Mauricio Vuljevas](https://www.mvuljevas.com?utm_source=noframevato).
 
 ## License
 
-MIT License - Feel free to use and modify as needed.
-
-## Contributing
-
-Issues and pull requests are welcome!
+MIT License.
