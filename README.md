@@ -11,9 +11,9 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 - **Auto-Remove Mode**: Automatically removes preview frames on visit (enabled by default).
 - **Floating Control Panel**: A sleek, non-intrusive side panel to manage settings on the fly.
 - **Premium UI**: "Glassmorphism" design with smooth, switch-like animations.
-- **Smart Detection**: Specifically targets Envato's `.full-screen-preview__frame` container.
-- **Safe Redirects**: Validates URLs before redirecting to ensure safety.
-- **Shadow DOM Isolation**: The UI is encapsulated in Shadow DOM to prevent style conflicts with the host page.
+- **Context Preservation (Widget Mode)**: Optionally injects an elegant floating button panel on the creator's real external website, retaining Envato's "Buy Now" and "Details" links even after the redirect.
+- **Smart Detection**: Specifically extracts product metadata from Envato domains and targets the `.full-screen-preview__frame` container safely.
+- **Shadow DOM Isolation**: The UI and floating widgets are strictly encapsulated in Shadow DOM to avoid CSS bleeding onto any theme's complex stylesheets.
 
 ## Installation
 
@@ -29,20 +29,20 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 
 ## Usage
 
-- **Auto-Remove**: Just browse ThemeForest or CodeCanyon. Preview frames vanish automatically!
-- **Manual Control**: Click the extension icon to toggle the floating panel. From there, you can:
-    - Perform a manual frame removal.
-    - Toggle the "Auto Remove" setting.
+- **Auto-Remove**: Just browse Envato network sites (ThemeForest, CodeCanyon, VideoHive, etc.). Preview iframe wrappers will vanish automatically, directly redirecting you to clean theme websites.
+- **Floating Control Panel**: Click the extension icon to toggle the floating panel on any Envato page. From there, you can:
+    - Perform a manual Envato frame removal.
+    - Toggle the "Auto Remove" configuration.
+    - Enable the **"Widget Mode (Test)"** configuration to keep the essential Envato purchase links natively floating on the target theme demo.
 
 ## Technical Details
 
-- **Manifest V3**: Compliant with the latest Chrome Extension standards.
+- **Manifest V3**: Compliant with the latest Chrome Extension standards, utilizing `chrome.storage.local` context passing mechanisms and full domain permissions `<all_urls>` for cross-origin widget injection.
 - **Architecture**:
-    - `content.js`: Handles logic and Shadow DOM injection.
-    - `content.css`: Styles for the panel container.
-    - `sidepanel.html/css/js`: The UI implementation loaded inside the Shadow DOM iframe.
-    - `background.js`: Orchestration and event handling.
-- **Permissions**: Minimal permissions (`storage`, `activeTab`).
+    - `content.js`: Captures Envato metadata on previews, fires secure redirects, and injects floating Shadow DOM widgets seamlessly into third-party target showcase websites.
+    - `content.css`: Base layout requirements for the floating panel.
+    - `sidepanel.html/css/js`: An aesthetic UI implementation loaded inside an isolated inner iframe.
+    - `background.js`: Event handler orchestration (relaying extension clicks).
 
 ## Development
 
