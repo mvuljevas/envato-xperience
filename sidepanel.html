@@ -33,14 +33,54 @@
         <!-- Action Tab -->
         <div id="actionTab" class="tab-panel active">
           <!-- Normal UI -->
-          <div id="envatoControls">
-            <div class="card">
-              <p class="status-text" id="envatoDomainText" style="margin-bottom: 5px; font-weight: bold;">
-                Envato Preview detected!
-              </p>
-              <p class="status-text" id="productTitleText" style="color: #6fab35; font-size: 14px; margin-bottom: 15px;">
+          <div id="envatoControls" style="text-align: center;">
+            <p class="status-text" id="envatoDomainText" style="margin-bottom: 8px; font-weight: 600; color: #6c757d; font-size: 14px;">
+              Envato Preview detected!
+            </p>
+            
+            <div class="card" style="padding: 16px;">
+              <!-- Image Banner (Edge to Top-Edge) -->
+              <div class="image-wrapper" style="margin: -16px -16px 16px -16px; border-bottom: 1px solid #f1f3f5; background: #f8f9fa;">
+                  <img id="itemDetailsImage" src="" style="width: 100%; display: none; vertical-align: middle; object-fit: cover;" />
+              </div>
+
+              <!-- Initial Loading Text (Visible before fetch completes) -->
+              <p class="status-text" id="loadingText" style="color: #6fab35; font-size: 14px; font-weight: 500; margin-bottom: 16px; line-height: 1.4; text-align: center;">
                 Loading product info...
               </p>
+              
+              <!-- Item Details Container -->
+              <div id="itemDetailsContainer" class="hidden">
+                 
+                 <!-- Header Row (Title & Price) -->
+                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px;">
+                     <!-- Product Title -->
+                     <p class="status-text" id="productTitleText" style="color: #262626; font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 300; margin: 0; line-height: 1.25; text-align: left; flex: 1;">
+                     </p>
+                     
+                     <!-- Price -->
+                     <div id="itemDetailsPrice" style="font-size: 24px; font-weight: 700; color: #495057; line-height: 1.1; letter-spacing: -0.5px; white-space: nowrap;">
+                        --
+                     </div>
+                 </div>
+
+                 <!-- E-commerce Data -->
+                 <div style="text-align: left;">
+                     <!-- Rating Row -->
+                     <div id="itemDetailsRating" style="display: flex; align-items: center; margin-bottom: 12px;">
+                     </div>
+                     
+                     <!-- Metadata Footer (Sales & Updated) -->
+                     <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f3f5; padding-top: 12px; margin-top: 4px;">
+                         <div id="itemDetailsSales" style="color: #495057; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                         </div>
+                         <div id="itemDetailsUpdate" style="color: #868e96; font-size: 12px;">
+                         </div>
+                     </div>
+                 </div>
+              </div>
+            </div>
+
               <button id="removeNow" class="main-action">Remove Frame</button>
             </div>
           </div>

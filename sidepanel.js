@@ -69,18 +69,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (envatoControls) envatoControls.classList.remove('hidden');
                 if (notEnvatoMessage) notEnvatoMessage.classList.add('hidden');
 
+                let siteName = "Envato";
+                if (activeTab.url.includes('themeforest')) siteName = "ThemeForest";
+                if (activeTab.url.includes('codecanyon')) siteName = "CodeCanyon";
+                if (activeTab.url.includes('videohive')) siteName = "VideoHive";
+                if (activeTab.url.includes('audiojungle')) siteName = "AudioJungle";
+                if (activeTab.url.includes('graphicriver')) siteName = "GraphicRiver";
+                if (activeTab.url.includes('photodune')) siteName = "PhotoDune";
+                if (activeTab.url.includes('3docean')) siteName = "3DOcean";
+
                 if (envatoDomainText) {
-                    let siteName = "Envato";
-                    if (activeTab.url.includes('themeforest')) siteName = "ThemeForest";
-                    if (activeTab.url.includes('codecanyon')) siteName = "CodeCanyon";
-                    if (activeTab.url.includes('videohive')) siteName = "VideoHive";
-                    if (activeTab.url.includes('audiojungle')) siteName = "AudioJungle";
-                    if (activeTab.url.includes('graphicriver')) siteName = "GraphicRiver";
-                    if (activeTab.url.includes('photodune')) siteName = "PhotoDune";
-                    if (activeTab.url.includes('3docean')) siteName = "3DOcean";
-                    
                     envatoDomainText.textContent = isEnvatoPreview ? `You are viewing a preview on ${siteName}` : `You are browsing ${siteName}`;
                 }
+
+                const itemDetailsContainer = document.getElementById('itemDetailsContainer');
+                if (itemDetailsContainer) itemDetailsContainer.classList.add('hidden');
 
                 if (isEnvatoPreview) {
                     if (removeNowBtn) removeNowBtn.classList.remove('hidden');
@@ -95,6 +98,131 @@ document.addEventListener('DOMContentLoaded', function () {
                             if (productTitleText) productTitleText.textContent = response.title;
                         } else {
                             if (productTitleText) productTitleText.textContent = "Product (Title not found)";
+                        }
+                    });
+                } else if (activeTab.url.includes('/item/')) {
+                    // Item Page
+                    if (removeNowBtn) removeNowBtn.classList.add('hidden');
+                    if (envatoDomainText) envatoDomainText.textContent = `Viewing Product on ${siteName}`;
+                    const loadingText = document.getElementById('loadingText');
+                    if (loadingText) {
+                        loadingText.textContent = "Fetching details...";
+                        loadingText.style.display = 'block';
+                    }
+                    if (itemDetailsContainer) itemDetailsContainer.classList.add('hidden');
+                    
+                    chrome.tabs.sendMessage(activeTab.id, { action: "get_item_details" }, function(response) {
+                        if (chrome.runtime.lastError) {
+                            if (loadingText) loadingText.textContent = "Error fetching details.";
+                            return;
+                        }
+                        if (response && response.title) {
+                            if (loadingText) loadingText.style.display = 'none';
+                            if (productTitleText) productTitleText.textContent = response.title;
+                            if (itemDetailsContainer) itemDetailsContainer.classList.remove('hidden');
+                            
+                            const renderUI = (finalImageUrl) => {
+                                const imageEl = document.getElementById('itemDetailsImage');
+                                if (imageEl && finalImageUrl) {
+                                    imageEl.src = finalImageUrl;
+                                    imageEl.style.display = 'block';
+                                } else if (imageEl) {
+                                    imageEl.style.display = 'none';
+                                }
+                                
+                                const priceEl = document.getElementById('itemDetailsPrice');
+                                const salesEl = document.getElementById('itemDetailsSales');
+                                const ratingEl = document.getElementById('itemDetailsRating');
+                                const updateEl = document.getElementById('itemDetailsUpdate');
+                                
+                                if (priceEl) {
+                                    if (response.oldPrice) {
+                                        // Modern Discount layout
+                                        priceEl.innerHTML = `<span style="text-decoration: line-through; text-decoration-thickness: 2px; color: #868e96; font-size: 16px; font-weight: 600; margin-right: 6px;">${response.oldPrice}</span><span style="color: #6fab35; font-size: 24px;">${response.price}</span>`;
+                                    } else {
+                                        priceEl.innerHTML = `<span style="font-size: 24px;">${response.price ? response.price : '--'}</span>`;
+                                    }
+                                }
+                                
+                                if (salesEl) {
+                                    const svgCart = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#6c757d;"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>`;
+                                    salesEl.innerHTML = `${svgCart} <span><strong style="font-weight:600;">${response.sales ? response.sales : '--'}</strong> Sales</span>`;
+                                }
+                                
+                                if (ratingEl) {
+                                    const pathD = "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z";
+                                    if (response.rating || response.ratingCount) {
+                                        const score = response.rating ? parseFloat(response.rating) : 5;
+                                        let starsHtml = '<div style="display:flex; gap:2px;">';
+                                        
+                                        for(let i=1; i<=5; i++) {
+                                            const fillP = Math.max(0, Math.min(100, (score - i + 1) * 100));
+                                            if (fillP === 100) {
+                                                starsHtml += `<svg width="14" height="14" viewBox="0 0 24 24" fill="#f5a623"><path d="${pathD}"/></svg>`;
+                                            } else if (fillP === 0) {
+                                                starsHtml += `<svg width="14" height="14" viewBox="0 0 24 24" fill="#e9ecef"><path d="${pathD}"/></svg>`;
+                                            } else {
+                                                // Unique gradient id for fractional star
+                                                const gid = `grad-${itemId || 'default'}-${i}-${Date.now()}`;
+                                                starsHtml += `<svg width="14" height="14" viewBox="0 0 24 24">
+                                                    <defs>
+                                                        <linearGradient id="${gid}">
+                                                            <stop offset="${fillP}%" stop-color="#f5a623"/>
+                                                            <stop offset="${fillP}%" stop-color="#e9ecef"/>
+                                                        </linearGradient>
+                                                    </defs>
+                                                    <path fill="url(#${gid})" d="${pathD}"/>
+                                                </svg>`;
+                                            }
+                                        }
+                                        starsHtml += '</div>';
+                                        
+                                        const exactScoreHtml = response.rating ? `<span style="color: #495057; font-size: 13px; font-weight: 500; margin-left: 6px;">${score.toFixed(2)}</span>` : '';
+                                        const badgeCountHtml = response.ratingCount ? `<span style="background: #007bae; color: white; padding: 2px 5px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 6px; letter-spacing: 0.2px;">${response.ratingCount}</span>` : '';
+                                        
+                                        ratingEl.innerHTML = `${starsHtml} ${exactScoreHtml} ${badgeCountHtml}`;
+                                    } else {
+                                        let emptyStarsHtml = '<div style="display:flex; gap:2px;">';
+                                        for(let i=1; i<=5; i++) {
+                                            emptyStarsHtml += `<svg width="14" height="14" viewBox="0 0 24 24" fill="#dee2e6"><path d="${pathD}"/></svg>`;
+                                        }
+                                        emptyStarsHtml += '</div>';
+                                        ratingEl.innerHTML = `${emptyStarsHtml} <span style="color: #868e96; font-size: 13px; font-weight: 500; margin-left: 6px;">(No ratings)</span>`;
+                                    }
+                                }
+
+                                if (updateEl) {
+                                    if (response.lastUpdate) {
+                                        updateEl.textContent = `Last updated: ${response.lastUpdate}`;
+                                        updateEl.style.display = 'block';
+                                    } else {
+                                        updateEl.style.display = 'none';
+                                    }
+                                }
+                            };
+
+                            // Cache logic for preserving High-res image across sub-tabs (like /comments)
+                            const match = activeTab.url.match(/\/item\/[^\/]+\/(\d+)/);
+                            const itemId = match ? match[1] : null;
+
+                            if (itemId) {
+                                chrome.storage.local.get([`cachedImg_${itemId}`], function(res) {
+                                    let finalImg = response.imageUrl;
+                                    
+                                    if (response.isHighResImage) {
+                                        chrome.storage.local.set({ [`cachedImg_${itemId}`]: response.imageUrl });
+                                    } else if (res[`cachedImg_${itemId}`]) {
+                                        finalImg = res[`cachedImg_${itemId}`];
+                                    }
+                                    
+                                    renderUI(finalImg);
+                                });
+                            } else {
+                                renderUI(response.imageUrl);
+                            }
+                        } else {
+                            if (loadingText) loadingText.textContent = "General browsing (No frames here)";
+                            if (loadingText) loadingText.style.display = 'block';
                         }
                     });
                 } else {
