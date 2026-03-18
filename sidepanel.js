@@ -16,6 +16,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Settings Tab Elements
     const autoRemoveCheckbox = document.getElementById('autoRemove');
+    const widgetModeCheckbox = document.getElementById('widgetMode');
+
+    // UI Feedback Elements
+    const envatoDomainText = document.getElementById('envatoDomainText');
+    const productTitleText = document.getElementById('productTitleText');
 
     /**
      * Tab Switching Logic
@@ -53,13 +58,50 @@ document.addEventListener('DOMContentLoaded', function () {
         chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
             if (!tabs || tabs.length === 0) return;
             const activeTab = tabs[0];
-            const isEnvatoSite = activeTab.url &&
-                (activeTab.url.includes('preview.themeforest.net') ||
-                    activeTab.url.includes('preview.codecanyon.net'));
+            
+            const previewDomains = ['preview.themeforest.net', 'preview.codecanyon.net', 'preview.videohive.net', 'preview.audiojungle.net', 'preview.graphicriver.net', 'preview.photodune.net', 'preview.3docean.net'];
+            const envatoDomains = ['themeforest.net', 'codecanyon.net', 'videohive.net', 'audiojungle.net', 'graphicriver.net', 'photodune.net', '3docean.net', 'envato.com'];
+            
+            const isEnvatoPreview = activeTab.url && previewDomains.some(domain => activeTab.url.includes(domain));
+            const isEnvatoSite = activeTab.url && envatoDomains.some(domain => activeTab.url.includes(domain));
 
             if (isEnvatoSite) {
                 if (envatoControls) envatoControls.classList.remove('hidden');
                 if (notEnvatoMessage) notEnvatoMessage.classList.add('hidden');
+
+                if (envatoDomainText) {
+                    let siteName = "Envato";
+                    if (activeTab.url.includes('themeforest')) siteName = "ThemeForest";
+                    if (activeTab.url.includes('codecanyon')) siteName = "CodeCanyon";
+                    if (activeTab.url.includes('videohive')) siteName = "VideoHive";
+                    if (activeTab.url.includes('audiojungle')) siteName = "AudioJungle";
+                    if (activeTab.url.includes('graphicriver')) siteName = "GraphicRiver";
+                    if (activeTab.url.includes('photodune')) siteName = "PhotoDune";
+                    if (activeTab.url.includes('3docean')) siteName = "3DOcean";
+                    
+                    envatoDomainText.textContent = isEnvatoPreview ? `You are viewing a preview on ${siteName}` : `You are browsing ${siteName}`;
+                }
+
+                if (isEnvatoPreview) {
+                    if (removeNowBtn) removeNowBtn.classList.remove('hidden');
+                    
+                    chrome.tabs.sendMessage(activeTab.id, { action: "get_product_info" }, function(response) {
+                        // Ignore errors if the content script is not injected yet
+                        if (chrome.runtime.lastError) {
+                            if (productTitleText) productTitleText.textContent = "Loading...";
+                            return;
+                        }
+                        if (response && response.title) {
+                            if (productTitleText) productTitleText.textContent = response.title;
+                        } else {
+                            if (productTitleText) productTitleText.textContent = "Product (Title not found)";
+                        }
+                    });
+                } else {
+                    if (removeNowBtn) removeNowBtn.classList.add('hidden');
+                    if (productTitleText) productTitleText.textContent = "General browsing (No frames here)";
+                }
+
             } else {
                 if (envatoControls) envatoControls.classList.add('hidden');
                 if (notEnvatoMessage) notEnvatoMessage.classList.remove('hidden');
@@ -68,14 +110,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function loadSettings() {
-        chrome.storage.sync.get(['autoRemove'], function (result) {
+        chrome.storage.sync.get(['autoRemove', 'widgetMode'], function (result) {
             if (autoRemoveCheckbox) autoRemoveCheckbox.checked = (result.autoRemove !== false);
+            if (widgetModeCheckbox) widgetModeCheckbox.checked = (result.widgetMode === true); // defaults to false
         });
     }
 
     function saveSettings() {
-        if (!autoRemoveCheckbox) return;
-        chrome.storage.sync.set({ autoRemove: autoRemoveCheckbox.checked });
+        if (!autoRemoveCheckbox || !widgetModeCheckbox) return;
+        chrome.storage.sync.set({ 
+            autoRemove: autoRemoveCheckbox.checked,
+            widgetMode: widgetModeCheckbox.checked 
+        });
     }
 
     /**
@@ -100,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Event Listeners
     if (autoRemoveCheckbox) autoRemoveCheckbox.addEventListener('change', saveSettings);
+    if (widgetModeCheckbox) widgetModeCheckbox.addEventListener('change', saveSettings);
     if (removeNowBtn) removeNowBtn.addEventListener('click', triggerManualRemoval);
     if (closeBtn) closeBtn.addEventListener('click', triggerClose);
 

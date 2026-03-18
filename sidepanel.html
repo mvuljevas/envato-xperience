@@ -35,9 +35,11 @@
           <!-- Normal UI -->
           <div id="envatoControls">
             <div class="card">
-              <p class="status-text">
-                Envato Preview detected! Ready to remove the frame and redirect
-                you to the real page.
+              <p class="status-text" id="envatoDomainText" style="margin-bottom: 5px; font-weight: bold;">
+                Envato Preview detected!
+              </p>
+              <p class="status-text" id="productTitleText" style="color: #6fab35; font-size: 14px; margin-bottom: 15px;">
+                Loading product info...
               </p>
               <button id="removeNow" class="main-action">Remove Frame</button>
             </div>
@@ -60,10 +62,17 @@
         <!-- Settings Tab -->
         <div id="settingsTab" class="tab-panel">
           <h3 class="settings-header">General Settings</h3>
-          <div class="card control-group">
+          <div class="card control-group" style="margin-bottom: 5px;">
             <label for="autoRemove">Auto Remove</label>
             <label class="switch">
               <input type="checkbox" id="autoRemove" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="card control-group">
+            <label for="widgetMode">Widget Mode (Test)</label>
+            <label class="switch">
+              <input type="checkbox" id="widgetMode" />
               <span class="slider"></span>
             </label>
           </div>
