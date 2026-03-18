@@ -118,6 +118,110 @@ function removeFrame(useWidgetMode = false) {
 }
 
 /**
+ * Extracts metadata from the Envato item details page
+ */
+function extractItemDetails() {
+  let title = document.querySelector('h1')?.textContent.trim() || document.title;
+  if (title.includes(' - ThemeForest')) title = title.replace(' - ThemeForest', '');
+  if (title.includes(' - CodeCanyon')) title = title.replace(' - CodeCanyon', '');
+
+  let imageUrl = '';
+  let isHighResImage = false;
+  // Prioritize the actual high-res rectangular preview image in the DOM
+  const imgEl = document.querySelector('.js-item-preview img, .item-preview img, .item-preview-image__img, .preview-image, #preview-image');
+  if (imgEl) {
+      // Manage lazy-loaded formats common in ThemeForest
+      imageUrl = imgEl.getAttribute('data-preview-url') || imgEl.getAttribute('data-src') || imgEl.src;
+      isHighResImage = true;
+  } else {
+      // Fallback to og:image if native preview container is completely missing
+      const ogImage = document.querySelector('meta[property="og:image"]');
+      if (ogImage) imageUrl = ogImage.content;
+  }
+
+  let price = '';
+  let oldPrice = '';
+  const priceEl = document.querySelector('.js-purchase-price, .item-price, .purchase-form__price');
+  if (priceEl) {
+      const strikeEl = priceEl.querySelector('s, del, strike, .price-strikethrough, .js-purchase-price--old');
+      
+      if (strikeEl) {
+          oldPrice = strikeEl.textContent.trim();
+          price = priceEl.textContent.replace(oldPrice, '').trim();
+      } else {
+          // Fallback: If Envato collapses both prices into raw text "$49 $34", we can extract them mathematically
+          const rawText = priceEl.textContent.trim().replace(/\s+/g, ' ');
+          let priceMatch = rawText.match(/([\$\€\£]\s*\d+(?:[\.,]\d+)?)\s+([\$\€\£]\s*\d+(?:[\.,]\d+)?)/);
+          if (priceMatch && priceMatch.length >= 3) {
+              oldPrice = priceMatch[1];
+              price = priceMatch[2];
+          } else {
+              price = rawText;
+          }
+      }
+  }
+
+  let sales = '';
+  const salesEl = document.querySelector('.item-header__sales-count, .item-sales-count, .item-header__sales');
+  if (salesEl) {
+      const sMatch = salesEl.textContent.match(/[\d.,]+[kKmM]?/);
+      if (sMatch) sales = sMatch[0];
+  }
+  if (!sales) {
+      const bodySalesMatch = document.body.innerText.match(/([\d.,]+[kKmM]?)\s*Sales/i);
+      if (bodySalesMatch) sales = bodySalesMatch[1];
+  }
+
+  let rating = '';
+  let ratingCount = '';
+
+  const rMeta = document.querySelector('[itemprop="ratingValue"]');
+  if (rMeta) rating = rMeta.getAttribute('content') || rMeta.textContent;
+  const cMeta = document.querySelector('[itemprop="reviewCount"]');
+  if (cMeta) ratingCount = cMeta.getAttribute('content') || cMeta.textContent;
+
+  if (!rating) {
+      const rEl = document.querySelector('.rating-score strong, .rating-score, .stars-rating__score, .js-item-rating-score');
+      if (rEl) rating = rEl.getAttribute('data-score') || rEl.textContent;
+  }
+  if (!ratingCount) {
+      const cEl = document.querySelector('.rating-count, .item-rating__count, .js-item-rating-count');
+      if (cEl) ratingCount = cEl.textContent;
+  }
+
+  // Hardcore Fallbacks scanning the raw text of the site
+  const bodyText = document.body.innerText;
+  
+  if (!rating || !ratingCount) {
+      // Look for the modern ThemeForest menu pattern: "Reviews ★★★★★ 4.84 [1K]" or similar
+      const tfMatch = bodyText.match(/Reviews[\s\n★☆\-\*]*([\d.]+)[\s\n]*([\[\(]?[\d.,]+[kKmM]?[\]\)]?)/i);
+      if (tfMatch) {
+          if (!rating) rating = tfMatch[1];
+          if (!ratingCount) ratingCount = tfMatch[2];
+      }
+  }
+
+  if (!rating) {
+      const outOfMatch = bodyText.match(/(?:Rated\s+)?([\d.]+)\s*(?:out of|\/)\s*5/i);
+      if (outOfMatch) rating = outOfMatch[1];
+  }
+  if (!ratingCount) {
+      // Match patterns like "1,033 Reviews"
+      const numRevMatch = bodyText.match(/([\d.,]+[kKmM]?)\s*(?:Ratings|Reviews)/i);
+      if (numRevMatch) ratingCount = numRevMatch[1];
+  }
+
+  if (rating) rating = rating.replace(/[^\d.]/g, '').trim();
+  if (ratingCount) ratingCount = ratingCount.replace(/[()\[\]]/g, '').replace(/reviews?/i, '').replace(/ratings?/i, '').trim();
+
+  let lastUpdate = '';
+  const timeEl = document.querySelector('time.updated, time[itemprop="dateModified"], .last-update-date');
+  if (timeEl) lastUpdate = timeEl.textContent.trim();
+
+  return { title, imageUrl, isHighResImage, price, oldPrice, sales, rating, ratingCount, lastUpdate, isItemPage: true };
+}
+
+/**
  * Extracts product metadata from the native Envato header
  */
 function extractProductInfo() {
@@ -304,6 +408,10 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     case "get_product_info":
       const info = extractProductInfo();
       sendResponse(info);
+      break;
+    case "get_item_details":
+      const details = extractItemDetails();
+      sendResponse(details);
       break;
   }
   return true; // Keep message channel open for async response
