@@ -10,8 +10,16 @@
   },
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
-    "*://preview.themeforest.net/*",
-    "*://preview.codecanyon.net/*"
+    "*://*.themeforest.net/*",
+    "*://*.codecanyon.net/*",
+    "*://*.videohive.net/*",
+    "*://*.audiojungle.net/*",
+    "*://*.graphicriver.net/*",
+    "*://*.photodune.net/*",
+    "*://*.3docean.net/*",
+    "*://*.envato.com/*",
+    "*://*.envatomarket.com/*",
+    "<all_urls>"
   ],
   "background": {
     "service_worker": "background.js"

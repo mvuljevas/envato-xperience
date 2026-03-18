@@ -81,11 +81,10 @@ function isValidUrl(url) {
 }
 
 /**
- * Logic to remove the Envato preview frame
+ * Logic to remove the Envato preview frame or apply Widget Mode
  */
-function removeFrame() {
+function removeFrame(useWidgetMode = false) {
   try {
-    // Selector for the Envato preview iframe
     const previewIframe = document.querySelector(
       "iframe.full-screen-preview__frame",
     );
@@ -94,7 +93,17 @@ function removeFrame() {
     if (previewIframe.src) {
       const targetUrl = previewIframe.src;
       if (isValidUrl(targetUrl)) {
-        window.location.href = targetUrl;
+        if (useWidgetMode) {
+          const info = extractProductInfo();
+          info.targetDomain = new URL(targetUrl).hostname;
+          info.timestamp = Date.now();
+
+          chrome.storage.local.set({ activeEnvatoPreview: info }, () => {
+            window.location.href = targetUrl;
+          });
+        } else {
+          window.location.href = targetUrl;
+        }
       } else {
         previewIframe.remove();
       }
@@ -109,25 +118,174 @@ function removeFrame() {
 }
 
 /**
+ * Extracts product metadata from the native Envato header
+ */
+function extractProductInfo() {
+  let title = document.title;
+  if (title.includes(' - ThemeForest')) title = title.replace(' - ThemeForest', '');
+  if (title.includes(' - CodeCanyon')) title = title.replace(' - CodeCanyon', '');
+  title = title.trim();
+
+  const titleEl = document.querySelector('.t-link--hidden-reversed');
+  if (titleEl && titleEl.textContent) title = titleEl.textContent.trim();
+
+  let buyUrl = '';
+  const buyBtn = document.querySelector('a.buy-btn, a[href*="/checkout/"], a.header-buy-btn, .js-buy-btn');
+  if (buyBtn) buyUrl = buyBtn.href;
+
+  let itemUrl = '';
+  if (titleEl && titleEl.href) itemUrl = titleEl.href;
+
+  return { title, buyUrl, itemUrl };
+}
+
+let widgetContainer = null;
+
+/**
+ * Checks if we are on a post-redirect target site and injects the widget
+ */
+function checkAndInjectWidget() {
+  chrome.storage.local.get(['activeEnvatoPreview'], function(result) {
+    if (result.activeEnvatoPreview) {
+      const info = result.activeEnvatoPreview;
+      
+      // Check if context is fresh (e.g. within 2 hours)
+      const isFresh = (Date.now() - info.timestamp) < (2 * 60 * 60 * 1000);
+      
+      if (isFresh && window.location.hostname.includes(info.targetDomain)) {
+        injectWidget(info);
+      }
+    }
+  });
+}
+
+/**
+ * Injects our own Premium floating widget using Shadow DOM
+ */
+function injectWidget(info) {
+  if (widgetContainer) return;
+  
+  widgetContainer = document.createElement("div");
+  widgetContainer.id = "envato-custom-widget-root";
+  const shadow = widgetContainer.attachShadow({ mode: "open" });
+
+  const wrapper = document.createElement("div");
+  wrapper.innerHTML = `
+      <style>
+          :host {
+              position: fixed;
+              bottom: 24px;
+              right: 24px;
+              z-index: 2147483647;
+              font-family: 'Noto Sans', sans-serif;
+          }
+          .widget-box {
+              background: rgba(255, 255, 255, 0.85);
+              backdrop-filter: blur(12px);
+              -webkit-backdrop-filter: blur(12px);
+              border-radius: 12px;
+              padding: 16px 20px;
+              box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+              border: 1px solid rgba(255, 255, 255, 0.5);
+              display: flex;
+              flex-direction: column;
+              gap: 12px;
+              transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+              animation: slideIn 0.5s ease-out forwards;
+          }
+          @keyframes slideIn {
+              from { opacity: 0; transform: translateY(20px); }
+              to { opacity: 1; transform: translateY(0); }
+          }
+          .widget-box:hover {
+              transform: translateY(-4px);
+              box-shadow: 0 14px 45px rgba(0, 0, 0, 0.2);
+          }
+          .w-title {
+              font-size: 14px;
+              font-weight: 600;
+              color: #262626;
+              margin: 0;
+              max-width: 250px;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+          }
+          .w-actions {
+              display: flex;
+              gap: 8px;
+          }
+          .w-btn {
+              text-decoration: none;
+              font-size: 13px;
+              font-weight: 600;
+              padding: 10px 14px;
+              border-radius: 8px;
+              cursor: pointer;
+              text-align: center;
+              transition: all 0.2s;
+              flex: 1;
+              box-sizing: border-box;
+          }
+          .w-btn-buy {
+              background: #82b641;
+              color: white;
+              box-shadow: 0 4px 10px rgba(130, 182, 65, 0.3);
+          }
+          .w-btn-buy:hover {
+              background: #6fab35;
+              transform: translateY(-1px);
+              box-shadow: 0 6px 15px rgba(130, 182, 65, 0.4);
+          }
+          .w-btn-back {
+              background: rgba(0,0,0,0.06);
+              color: #495057;
+          }
+          .w-btn-back:hover {
+              background: rgba(0,0,0,0.1);
+              color: #262626;
+          }
+      </style>
+      <div class="widget-box">
+          <p class="w-title" title="${info.title}">${info.title || 'Envato Product'}</p>
+          <div class="w-actions">
+              ${info.itemUrl ? `<a href="${info.itemUrl}" class="w-btn w-btn-back">Details</a>` : ''}
+              ${info.buyUrl ? `<a href="${info.buyUrl}" class="w-btn w-btn-buy" target="_blank">Buy Now</a>` : ''}
+          </div>
+      </div>
+  `;
+
+  shadow.appendChild(wrapper);
+  document.body.appendChild(widgetContainer);
+}
+
+/**
  * Initialize the script
  */
 function initialize() {
-  chrome.storage.sync.get(["autoRemove"], function (result) {
+  if (window !== window.top) return; // Prevent execution inside iframes
+  
+  chrome.storage.sync.get(["autoRemove", "widgetMode"], function (result) {
     const autoRemoveEnabled = result.autoRemove !== false; // Default to true if undefined
+    const widgetModeEnabled = result.widgetMode === true; // Default to false
 
     // Only trigger auto-remove on actual preview pages
-    const isEnvatoSite =
-      window.location.hostname.includes("preview.themeforest.net") ||
-      window.location.hostname.includes("preview.codecanyon.net");
+    const previewDomains = ['preview.themeforest.net', 'preview.codecanyon.net', 'preview.videohive.net', 'preview.audiojungle.net', 'preview.graphicriver.net', 'preview.photodune.net', 'preview.3docean.net'];
+    const isEnvatoPreviewSite = previewDomains.some(domain => window.location.hostname.includes(domain));
 
-    if (autoRemoveEnabled && isEnvatoSite) {
-      removeFrame();
+    if (autoRemoveEnabled && isEnvatoPreviewSite) {
+      removeFrame(widgetModeEnabled);
+    } else if (!isEnvatoPreviewSite && widgetModeEnabled) {
+      // Check if we are on a theme's site after being redirected
+      checkAndInjectWidget();
     }
   });
 }
 
 // Listen for messages from background script or sidepanel
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (window !== window.top) return; // Only process messages on the top level window
+  
   switch (request.action) {
     case "toggle_floating_panel":
       togglePanel();
@@ -138,11 +296,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       sendResponse({ success: true });
       break;
     case "remove_frame":
-      removeFrame();
+      chrome.storage.sync.get(["widgetMode"], function(result) {
+          removeFrame(result.widgetMode === true);
+      });
       sendResponse({ success: true });
       break;
+    case "get_product_info":
+      const info = extractProductInfo();
+      sendResponse(info);
+      break;
   }
-  return true; // Keep message channel open for async response if needed
+  return true; // Keep message channel open for async response
 });
 
 initialize();
