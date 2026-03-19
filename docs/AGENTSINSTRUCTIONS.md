@@ -10,6 +10,7 @@ Al modificar la extensión Envato Xperience y continuar con su desarrollo, los a
    - Manipula el DOM de la página anfitriona lo menos posible.
    - Si se requiere esperar por elementos (ej. la carga de la top bar de Envato que puede ser construida vía SPA), utiliza `MutationObserver` y no bucles o intervalos estáticos pesados.
    - Usa el `itemId` numérico de Envato como identificador canónico del producto. No tomes decisiones de caché o reconciliación basadas en títulos o slugs si el ID está disponible.
+   - Si una supresión visual debe entrar antes del paint, prioriza un asset CSS empaquetado en `document_start` y un flag en `data-*` sobre la raíz del documento, en lugar de inyectar estilos tardíamente desde `content.js`.
 
 4. **Seguridad y Extension API**:
    - Mantener compatibilidad absoluta con el estándar **Manifest V3**.
@@ -22,3 +23,4 @@ Al modificar la extensión Envato Xperience y continuar con su desarrollo, los a
    - Implementar bordes sutiles y redondeados (mínimo `border-radius: 8px`).
    - Las interacciones (como `hover`) deben sentirse orgánicas; añade siempre `transition: all 0.2s` mínimo.
    - Priorizar `Oswald` como tipografía de display en headings, tabs, labels y estados del panel. Si se necesita consistencia total, empaquetar la fuente localmente en la extensión; no depender de fuentes remotas.
+   - Al retocar CSS del panel, lee primero los estilos existentes y evita pisar ajustes manuales del workspace si puedes encapsular el cambio con clases nuevas o archivos dedicados.

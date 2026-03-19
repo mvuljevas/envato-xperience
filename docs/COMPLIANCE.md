@@ -7,6 +7,7 @@
 - **No remote extension-page assets**: the floating panel no longer loads external Google Fonts. The panel now uses packaged local `Oswald` font files, which keeps the extension page self-contained.
 - **Safer rendering**: product data extracted from Envato pages is rendered with DOM APIs and `textContent` instead of `innerHTML`.
 - **Shadow DOM isolation**: injected UI stays isolated from host pages.
+- **Early packaged overrides**: marketplace promo suppression is driven by bundled `document_start` assets (`marketplace-init.js` + `marketplace-overrides.css`) instead of remote resources or late inline style injection.
 - **Scoped storage**: settings remain in `chrome.storage.sync`, preview context stays in `chrome.storage.local`, and cached product images live in `IndexedDB`. There is no remote backend and no analytics pipeline in the codebase.
 - **Stable product mapping**: Envato `itemId` values from item URLs are used as the canonical internal key, which reduces heuristic matching across reviews/comments/support routes.
 - **Contextual fallback UI**: non-item pages render explicit informational states instead of an indefinite product-loading state, which makes panel behavior deterministic and reviewable.
@@ -35,6 +36,7 @@
 2. Test both main modes:
    - Auto Remove on Envato preview pages.
    - Floating Widget on redirected external demo sites.
+   - Hide Ads on Envato browse and item pages, confirming there is no visible placeholder gap or delayed flicker on supported promo blocks.
 3. Verify there are no console errors in:
    - the service worker
    - the Envato preview page

@@ -29,8 +29,16 @@
   - Render seguro en panel/widget con DOM APIs en lugar de `innerHTML`.
   - Caché de imágenes en `IndexedDB` con TTL y límites explícitos.
   - Uso del `itemId` de Envato como clave estable entre item, reviews, comments y support.
+  - Supresión temprana de anuncios soportados mediante `document_start`, con CSS empaquetado para reducir flicker visible.
 
-## Fase 5: Próximos Pasos (Futuro)
+## Fase 5: Refinamiento del Sidepanel "Marketplace Card" (Completado)
+- **Objetivo**: Acercar la tarjeta del sidepanel al patrón compacto de Envato y aumentar la utilidad previa al clic.
+- **Solución implementada**:
+  - Tarjeta compacta con título, autor, categoría, precio, rating, ventas y última actualización.
+  - CTA directo a **Live Preview** cuando la URL está disponible en la página del item.
+  - Ajustes de layout y espaciado en Settings para mantener consistencia entre toggles.
+
+## Fase 6: Próximos Pasos (Futuro)
 - Integrar sección de "Related Products" (Productos Relacionados) dentro del panel lateral en las vistas de producto.
 - Permitir al usuario arrastrar el widget flotante a distintas esquinas de la pantalla.
 - Refinamientos en la carga asíncrona de datos en previews especialmente lentas.

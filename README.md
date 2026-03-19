@@ -12,9 +12,11 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 - **Floating Control Panel**: A sleek, non-intrusive side panel to manage settings on the fly.
 - **Premium UI**: "Glassmorphism" design with smooth, switch-like animations.
 - **Context Preservation (Floating Widget)**: Optionally injects an elegant floating button panel on the creator's real external website, retaining Envato's "Buy Now" and "Details" links even after the redirect.
+- **Hide Ads Toggle**: Optionally suppresses major Envato promotional surfaces such as top banners, Elements cross-sells, footer promos, and marketplace switcher ads.
 - **Stable Product Identity**: Uses the canonical Envato `itemId` from `/item/.../<id>` URLs so product data stays aligned across item, reviews, comments, and support tabs.
 - **Local Image Cache**: Stores product hero images in `IndexedDB` with TTL and eviction rules instead of bloating extension storage.
 - **Contextual Status States**: Outside item pages, the panel switches to premium editorial states for browse, preview, and fallback contexts instead of showing a dead loading message.
+- **Compact Product Card**: The sidepanel now renders a tighter, Envato-inspired product card with title, author, category, price, sales, rating, last update, and direct live preview access.
 - **Smart Detection**: Specifically extracts product metadata from Envato domains and targets the `.full-screen-preview__frame` container safely.
 - **Shadow DOM Isolation**: The UI and floating widgets are strictly encapsulated in Shadow DOM to avoid CSS bleeding onto any theme's complex stylesheets.
 
@@ -37,11 +39,14 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
     - Perform a manual Envato frame removal.
     - Toggle the "Auto Remove" configuration.
     - Enable **"Floating Widget"** to keep the essential Envato purchase links natively floating on the target theme demo.
+    - Enable **"Hide Ads"** to suppress supported Envato promotional blocks across browse, category, and item pages.
 
 ## Technical Details
 
 - **Manifest V3**: Compliant with the latest Chrome Extension standards, utilizing `chrome.storage.local` context passing mechanisms and full domain permissions `<all_urls>` for cross-origin widget injection.
 - **Architecture**:
+    - `marketplace-init.js`: Early `document_start` bootstrap that mirrors the `Hide Ads` setting into the page root before the marketplace paints.
+    - `marketplace-overrides.css`: Declarative anti-flicker stylesheet that collapses supported Envato ad surfaces immediately when `Hide Ads` is enabled.
     - `content.js`: Captures Envato metadata on previews, uses Envato `itemId` as the stable product key, fires secure redirects, and injects floating Shadow DOM widgets seamlessly into third-party target showcase websites.
     - `content.css`: Base layout requirements for the floating panel.
     - `sidepanel.html/css/js`: An aesthetic UI implementation loaded inside an isolated inner iframe.
@@ -54,6 +59,7 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 - The panel typography is bundled locally, including `Oswald`, with no remote font dependency.
 - Product metadata is rendered using safe DOM APIs rather than `innerHTML`.
 - Cached product images are stored in `IndexedDB`, not `chrome.storage.local`.
+- Envato ad suppression is applied through packaged `document_start` CSS and a lightweight local bootstrap, reducing visible flicker without remote dependencies.
 - Compliance notes and pre-publish review guidance live in `docs/COMPLIANCE.md`.
 - Cache architecture and storage rationale live in `docs/IMAGECACHE.md`.
 
@@ -65,6 +71,8 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 noframevato/
 ├── manifest.json       # Extension configuration
 ├── background.js       # Service worker
+├── marketplace-init.js # Early settings bootstrap for host-page overrides
+├── marketplace-overrides.css # Early ad-suppression rules for Envato pages
 ├── content.js          # Injection logic
 ├── content.css         # Container styles
 ├── fonts/              # Local bundled fonts for extension UI
