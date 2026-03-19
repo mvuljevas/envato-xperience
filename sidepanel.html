@@ -2,15 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Envato Previews Frame Remover</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Noto+Sans:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
+    <title>Envato Xperience</title>
     <link rel="stylesheet" href="sidepanel.css" />
   </head>
 
@@ -21,7 +13,7 @@
           &times;
         </button>
         <img src="images/envato-logo-dark.svg" alt="Envato Logo" class="logo" />
-        <h1>Frame Remover</h1>
+        <h1>Envato Xperience</h1>
         <div class="tabs">
           <div class="tab-glider"></div>
           <button class="tab-btn active" data-tab="action">Status</button>
@@ -33,15 +25,56 @@
         <!-- Action Tab -->
         <div id="actionTab" class="tab-panel active">
           <!-- Normal UI -->
-          <div id="envatoControls">
-            <div class="card">
-              <p class="status-text">
-                Envato Preview detected! Ready to remove the frame and redirect
-                you to the real page.
+          <div id="envatoControls" style="text-align: center;">
+            <p class="status-text" id="envatoDomainText" style="margin-bottom: 8px; font-weight: 600; color: #6c757d; font-size: 14px;">
+              Envato Preview detected!
+            </p>
+            
+            <div class="card" style="padding: 16px;">
+              <!-- Image Banner (Edge to Top-Edge) -->
+              <div class="image-wrapper" style="margin: -16px -16px 16px -16px; border-bottom: 1px solid #f1f3f5; background: #f8f9fa;">
+                  <img id="itemDetailsImage" src="" style="width: 100%; display: none; vertical-align: middle; object-fit: cover;" />
+              </div>
+
+              <!-- Initial Loading Text (Visible before fetch completes) -->
+              <p class="status-text" id="loadingText" style="color: #6fab35; font-size: 14px; font-weight: 500; margin-bottom: 16px; line-height: 1.4; text-align: center;">
+                Loading product info...
               </p>
+              
+              <!-- Item Details Container -->
+              <div id="itemDetailsContainer" class="hidden">
+                 
+                 <!-- Header Row (Title & Price) -->
+                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px;">
+                     <!-- Product Title -->
+                     <p class="status-text" id="productTitleText" style="color: #262626; font-family: 'Arial Narrow', 'Helvetica Neue', sans-serif; font-size: 18px; font-weight: 300; margin: 0; line-height: 1.25; text-align: left; flex: 1;">
+                     </p>
+                     
+                     <!-- Price -->
+                     <div id="itemDetailsPrice" style="font-size: 24px; font-weight: 700; color: #495057; line-height: 1.1; letter-spacing: -0.5px; white-space: nowrap;">
+                        --
+                     </div>
+                 </div>
+
+                 <!-- E-commerce Data -->
+                 <div style="text-align: left;">
+                     <!-- Rating Row -->
+                     <div id="itemDetailsRating" style="display: flex; align-items: center; margin-bottom: 12px;">
+                     </div>
+                     
+                     <!-- Metadata Footer (Sales & Updated) -->
+                     <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f3f5; padding-top: 12px; margin-top: 4px;">
+                         <div id="itemDetailsSales" style="color: #495057; font-size: 13px; display: flex; align-items: center; gap: 6px;">
+                         </div>
+                         <div id="itemDetailsUpdate" style="color: #868e96; font-size: 12px;">
+                         </div>
+                     </div>
+                 </div>
+              </div>
+            </div>
+
               <button id="removeNow" class="main-action">Remove Frame</button>
             </div>
-          </div>
 
           <!-- Not Envato UI -->
           <div
@@ -60,10 +93,17 @@
         <!-- Settings Tab -->
         <div id="settingsTab" class="tab-panel">
           <h3 class="settings-header">General Settings</h3>
-          <div class="card control-group">
+          <div class="card control-group" style="margin-bottom: 5px;">
             <label for="autoRemove">Auto Remove</label>
             <label class="switch">
               <input type="checkbox" id="autoRemove" />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="card control-group">
+            <label for="widgetMode">Floating Widget</label>
+            <label class="switch">
+              <input type="checkbox" id="widgetMode" />
               <span class="slider"></span>
             </label>
           </div>
@@ -71,9 +111,10 @@
           <h3 class="settings-header">About</h3>
           <div class="card about-info">
             <p><strong>Version:</strong> 1.0.0</p>
+            <p><strong>Author:</strong> Mauricio Vuljevas</p>
             <p>
-              Automatically redirects ThemeForest and CodeCanyon previews to
-              their actual content, saving you from annoying frames.
+              Removes Envato preview frames and preserves product context when
+              Floating Widget is enabled.
             </p>
           </div>
         </div>
@@ -99,9 +140,9 @@
           </svg>
         </a>
         <p>
-          Crafted with love in 🇺🇾 by
+          Crafted by
           <a
-            href="https://www.mvuljevas.com?utm_source=noframevato"
+            href="https://www.mvuljevas.com?utm_source=envatoxperience"
             target="_blank"
             >Mauricio Vuljevas</a
           >
@@ -109,6 +150,7 @@
       </div>
     </div>
 
+    <script src="image-cache.js"></script>
     <script src="sidepanel.js"></script>
   </body>
 </html>
