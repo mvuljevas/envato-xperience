@@ -68,3 +68,17 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Validación: inspección en vivo con Playwright sobre `themeforest.net/top-sellers` y `3docean.net/top-sellers`; patrón confirmado con `.shared-items_grid_with_sidebar_component__sidebar` y `.shared-items_grid_with_sidebar_component__itemsGrid`.
 - Riesgos pendientes: `graphicriver.net` respondió con challenge de Cloudflare en Playwright, así que queda por validar manualmente en navegador real aunque el patrón parece compartido entre marketplaces.
 - Próximo paso lógico: recargar la extensión y revisar `top-sellers` en Chrome para confirmar que desaparecen el sidebar y el bloque promo sin romper el grid principal.
+
+### 2026-03-19 - Smoke automation estándar para extensiones
+- Objetivo: estandarizar un smoke runner local para la extensión usando Playwright, perfil persistente reutilizable y un bridge mínimo para abrir el panel sin depender del icono del navegador.
+- Archivos: `package.json`, `package-lock.json`, `.gitignore`, `.env.local.example`, `scripts/playwright.extension.config.cjs`, `scripts/extension-smoke.spec.cjs`, `content.js`, `README.md`, `docs/WORKFLOW.md`.
+- Validación: `npm install`; `npx playwright install chromium`; `node --check content.js`; `node --check scripts/playwright.extension.config.cjs`; `node --check scripts/extension-smoke.spec.cjs`; `npm run smoke:extension` con 2/3 casos pasando (`item page panel`, `top-sellers hide ads`) y el caso autenticado de `downloads` quedando acotado a sesión/layout de cuenta.
+- Riesgos pendientes: el smoke autenticado depende de sesión válida o de credenciales funcionales en `/.env.local`; si se quiere reutilizar un perfil ya abierto de Chrome, falta pasar su ruta real por `PLAYWRIGHT_EXTENSION_PROFILE_DIR`.
+- Próximo paso lógico: decidir si el smoke de cuenta debe reutilizar el perfil de desarrollo existente o seguir con login automático hasta estabilizar `Downloads`.
+
+### 2026-03-19 - Smoke automation estabilizado
+- Objetivo: cerrar el smoke autenticado de `Downloads` con login automático fiable y fallback de navegación real vía popover del usuario.
+- Archivos: `scripts/extension-smoke.spec.cjs`, `README.md`, `docs/WORKFLOW.md`.
+- Validación: `node --check scripts/extension-smoke.spec.cjs`; `npm run smoke:extension` con `3 passed`; validación explícita de `item page`, `top-sellers`, y `downloads` autenticado.
+- Riesgos pendientes: no se puede reutilizar un perfil real de Chrome mientras el `user data dir` global siga bloqueado por otra instancia; para attach real hace falta `--remote-debugging-port`.
+- Próximo paso lógico: commitear este bloque y dejar el smoke como baseline para futuras iteraciones funcionales.

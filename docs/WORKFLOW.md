@@ -22,6 +22,7 @@ La herramienta está estructurada pura y netamente para Manifest V3. El flujo de
 - `fonts/`: Tipografías locales empaquetadas para la UI del panel, evitando dependencias remotas.
 - `image-cache.js`: Gestiona el caché local de imágenes en `IndexedDB` para evitar inflar `chrome.storage.local`.
 - `.env.local.example`: Plantilla local para pruebas autenticadas con Playwright. Usa `ENVATO_TEST_USERNAME`, `ENVATO_TEST_PASSWORD` y `ENVATO_ACCOUNT_URL`.
+- `scripts/playwright.extension.config.cjs` + `scripts/extension-smoke.spec.cjs`: smoke runner local de la extensión usando Playwright y un perfil persistente reutilizable.
 
 ## 2. Pruebas y Desarrollo Local
 
@@ -40,6 +41,15 @@ Dado el entorno de las Extensiones de Chrome, no hay un `npm run dev` nativo o l
    - una página de browse/categoría para confirmar que el panel muestre un estado contextual y no un loading muerto
    - una página con promos soportadas para confirmar que `Hide Ads` no deja huecos ni flicker visible
 9. Si necesitas inspección autenticada del DOM real en páginas de cuenta o `downloads`, usa `/.env.local` basado en `.env.local.example`. No trackear credenciales en git.
+10. Si quieres un smoke repetible de la extensión completa, usa:
+   ```bash
+   npm install
+   npm run smoke:extension
+   ```
+   - El perfil persistente por defecto vive en `.playwright/chrome-extension-dev`.
+   - Si ya tienes un perfil de desarrollo con sesión iniciada, reutilízalo con `PLAYWRIGHT_EXTENSION_PROFILE_DIR=/ruta/al/perfil`.
+   - Si ese perfil pertenece al Chrome principal que está abierto, el smoke no podrá relanzarlo mientras el `user data dir` raíz siga bloqueado por `SingletonLock`.
+   - El smoke de cuenta intenta llegar a `Downloads` por URL directa y, si hace falta, navega por el popover del usuario como lo hace un usuario real.
 
 ## 3. Directriz de Integración
 Cualquier nueva función o corrección de bugs debe revisarse validando que ambas interacciones principales funcionen:
@@ -47,6 +57,7 @@ Cualquier nueva función o corrección de bugs debe revisarse validando que amba
 2. El modo visual (Floating Widget): Limpia estilos y ancla el panel flotante.
 3. La continuidad de datos: el sidepanel debe seguir mostrando el mismo producto correcto aunque cambie la sub-ruta de Envato.
 4. La supresión temprana de promos: `Hide Ads` debe entrar antes del paint y no depender de un parche tardío en `content.js`.
+5. El smoke automation: el bridge de testing en `content.js` solo debe abrir/cerrar el panel y exponer estado mínimo. No convertirlo en una API paralela de negocio.
 No rompas un modo para arreglar otro.
 
 ## 4. Metodología Segura de Iteración

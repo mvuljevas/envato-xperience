@@ -66,6 +66,32 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 
 ## Development
 
+### Smoke Automation
+
+For repeatable local smoke checks, the repo now includes a Playwright-based extension runner:
+
+```bash
+npm install
+npm run smoke:extension
+```
+
+What it does:
+- launches Chromium with the unpacked extension loaded from the repo
+- uses a standard persistent profile directory at `.playwright/chrome-extension-dev`
+- opens the floating panel through a small DOM test bridge in `content.js`
+- validates `Hide Ads` on supported item, browse, and `top-sellers` pages
+- validates authenticated account/download views using `/.env.local`, including fallback navigation through the user popover when needed
+
+Useful overrides:
+- `PLAYWRIGHT_EXTENSION_PROFILE_DIR`: reuse an existing Chrome/Chromium dev profile instead of the default local profile
+- `PLAYWRIGHT_EXTENSION_PATH`: override the unpacked extension path
+- `SMOKE_ITEM_URL`: override the item-page smoke URL
+- `SMOKE_TOP_SELLERS_URL`: override the browse/top-sellers smoke URL
+
+Notes:
+- The baseline smoke currently passes `item page`, `top-sellers`, and authenticated `downloads`.
+- Reusing a real Chrome profile works only when Chrome is not already holding the same root user-data directory lock.
+
 ### File Structure
 
 ```
@@ -75,6 +101,8 @@ noframevato/
 ├── envato-shared.js    # Shared helpers for hosts, item IDs, and settings
 ├── marketplace-init.js # Early settings bootstrap for host-page overrides
 ├── marketplace-overrides.css # Early ad-suppression rules for Envato pages
+├── package.json        # Local Playwright smoke tooling entrypoints
+├── scripts/            # Playwright extension smoke config/spec
 ├── .env.local.example  # Local Playwright auth template for manual DOM debugging
 ├── content.js          # Injection logic
 ├── content.css         # Container styles
