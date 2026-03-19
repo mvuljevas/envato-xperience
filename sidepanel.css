@@ -234,6 +234,34 @@ h1 {
   text-align: center;
 }
 
+.contextual-heading {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.contextual-heading-prefix,
+.contextual-heading-site {
+  font-family: var(--display-font);
+  font-size: 14px;
+  letter-spacing: 1px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.contextual-heading-prefix {
+  color: #a7b0b8;
+  font-weight: 400;
+}
+
+.contextual-heading-site {
+  color: #262626;
+  font-weight: 500;
+}
+
 .status-state {
   align-items: flex-start;
   display: flex;
@@ -409,12 +437,48 @@ h1 {
   min-height: 20px;
 }
 
+.product-rating-stars {
+  display: flex;
+  gap: 2px;
+}
+
+.product-rating-score {
+  color: #495057;
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
+.product-rating-count {
+  background: #007bae;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  margin-left: 6px;
+  padding: 2px 5px;
+}
+
+.product-rating-empty {
+  color: #868e96;
+  font-size: 13px;
+  font-weight: 500;
+  margin-left: 6px;
+}
+
 .product-sales-row {
   align-items: center;
   color: #69737d;
   display: flex;
   font-size: 13px;
   gap: 6px;
+}
+
+.product-sales-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }
 
 .product-sales-value {
@@ -450,9 +514,11 @@ h1 {
 
 .product-preview-btn {
   align-items: center;
+  background: #f7f9fb;
   border: 1px solid;
-  border-color: #888;
-  color: #262626;
+  border-color: #cfd7df;
+  box-shadow: 0 1px 2px rgba(25, 35, 45, 0.06);
+  color: #2f3740;
   display: inline-flex;
   flex-shrink: 0;
   font-family: var(--display-font);
@@ -467,9 +533,10 @@ h1 {
 }
 
 .product-preview-btn:hover {
-  background: #262626;
-  border-color: #262626;
-  color: #FFFFFF;
+  background: #eef3f7;
+  border-color: #c6d0d9;
+  box-shadow: 0 2px 4px rgba(25, 35, 45, 0.08);
+  color: #2b333b;
 }
 
 .control-group {
@@ -604,46 +671,35 @@ input:checked + .slider:before {
   background: #fafbfc;
   border-top: 1px solid #f5f6f7;
   color: #6c757d;
-  /* Darker grey for better legibility */
   flex-shrink: 0;
   font-size: 11px;
-  /* Slightly larger */
   letter-spacing: 0.5px;
   padding: 20px 15px;
-  /* More breathing room */
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
 }
 
 .footer-banner a {
-  color: #764ba2;
+  color: #2f3740;
   font-family: var(--display-font);
   text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.2s;
+  font-weight: 500;
+  transition: color 0.2s ease, opacity 0.2s ease;
 }
 
 .footer-banner p {
+  color: #5c6670;
   font-family: var(--display-font);
+  margin: 0;
   letter-spacing: 0.7px;
   text-transform: uppercase;
 }
 
 .footer-banner a:hover {
-  opacity: 0.7;
-}
-
-.github-link {
-  color: #333 !important;
-  display: inline-flex;
-  opacity: 0.6;
-}
-
-.github-link:hover {
-  opacity: 1;
+  color: #20262d;
+  opacity: 0.8;
 }
 
 /* Not Envato UI */

@@ -4,7 +4,13 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
+    const shared = window.EnvatoXperienceShared;
     const svgNs = 'http://www.w3.org/2000/svg';
+    const storageKeys = shared ? shared.STORAGE_KEYS : {
+        hideAds: 'hideAds',
+        legacyHideAds: 'hidePromoBar',
+        hideAdsMirror: 'envatoXperienceHideAds'
+    };
     let currentImageObjectUrl = null;
 
     // Tab Elements
@@ -23,7 +29,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const hideAdsCheckbox = document.getElementById('hideAds');
 
     // UI Feedback Elements
-    const envatoDomainText = document.getElementById('envatoDomainText');
+    const envatoDomainPrefix = document.getElementById('envatoDomainPrefix');
+    const envatoDomainSite = document.getElementById('envatoDomainSite');
     const productTitleText = document.getElementById('productTitleText');
     const contentArea = document.querySelector('.content-area');
     const statusEmptyState = document.getElementById('statusEmptyState');
@@ -52,32 +59,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    function extractItemIdFromUrl(url) {
-        if (!url || typeof url !== 'string') {
-            return null;
-        }
-
-        const match = url.match(/\/item\/[^/]+\/(?:(?:reviews|comments|support)\/)?(\d+)(?:[/?#]|$)/i);
-        return match ? match[1] : null;
-    }
-
-    function getSiteName(url) {
-        if (!url) return 'Envato';
-        if (url.includes('themeforest')) return 'ThemeForest';
-        if (url.includes('codecanyon')) return 'CodeCanyon';
-        if (url.includes('videohive')) return 'VideoHive';
-        if (url.includes('audiojungle')) return 'AudioJungle';
-        if (url.includes('graphicriver')) return 'GraphicRiver';
-        if (url.includes('photodune')) return 'PhotoDune';
-        if (url.includes('3docean')) return '3DOcean';
-        return 'Envato';
-    }
-
     function setStatusPill(element, label, enabled) {
         if (!element) return;
         element.textContent = `${label} ${enabled ? 'On' : 'Off'}`;
         element.classList.toggle('is-on', enabled);
         element.classList.toggle('is-off', !enabled);
+    }
+
+    function renderDomainHeading(prefix, siteName) {
+        if (envatoDomainPrefix) envatoDomainPrefix.textContent = prefix;
+        if (envatoDomainSite) envatoDomainSite.textContent = siteName || '';
     }
 
     function refreshStatusPills() {
@@ -245,9 +236,7 @@ document.addEventListener('DOMContentLoaded', function () {
         cartSvg.appendChild(createSvgElement('path', { d: 'M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6' }));
 
         const textWrapper = document.createElement('div');
-        textWrapper.style.display = 'flex';
-        textWrapper.style.flexDirection = 'column';
-        textWrapper.style.gap = '3px';
+        textWrapper.className = 'product-sales-copy';
 
         const salesValue = document.createElement('span');
         salesValue.className = 'product-sales-value';
@@ -364,7 +353,7 @@ document.addEventListener('DOMContentLoaded', function () {
         clearChildren(ratingEl);
 
         const starsRow = document.createElement('div');
-        starsRow.style.cssText = 'display:flex; gap:2px;';
+        starsRow.className = 'product-rating-stars';
 
         if (response.rating || response.ratingCount) {
             const score = response.rating ? parseFloat(response.rating) : 5;
@@ -386,7 +375,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (response.rating) {
                 const exactScore = document.createElement('span');
-                exactScore.style.cssText = 'color: #495057; font-size: 13px; font-weight: 500; margin-left: 6px;';
+                exactScore.className = 'product-rating-score';
                 exactScore.textContent = score.toFixed(2);
                 ratingEl.appendChild(document.createTextNode(' '));
                 ratingEl.appendChild(exactScore);
@@ -394,7 +383,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (response.ratingCount) {
                 const ratingCount = document.createElement('span');
-                ratingCount.style.cssText = 'background: #007bae; color: white; padding: 2px 5px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-left: 6px; letter-spacing: 0.2px;';
+                ratingCount.className = 'product-rating-count';
                 ratingCount.textContent = formatEnvatoCompactCount(response.ratingCount);
                 ratingEl.appendChild(document.createTextNode(' '));
                 ratingEl.appendChild(ratingCount);
@@ -408,7 +397,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         const noRatings = document.createElement('span');
-        noRatings.style.cssText = 'color: #868e96; font-size: 13px; font-weight: 500; margin-left: 6px;';
+        noRatings.className = 'product-rating-empty';
         noRatings.textContent = '(No ratings)';
 
         ratingEl.appendChild(starsRow);
@@ -457,21 +446,19 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!tabs || tabs.length === 0) return;
             const activeTab = tabs[0];
             
-            const previewDomains = ['preview.themeforest.net', 'preview.codecanyon.net', 'preview.videohive.net', 'preview.audiojungle.net', 'preview.graphicriver.net', 'preview.photodune.net', 'preview.3docean.net'];
-            const envatoDomains = ['themeforest.net', 'codecanyon.net', 'videohive.net', 'audiojungle.net', 'graphicriver.net', 'photodune.net', '3docean.net', 'envato.com'];
-            
-            const isEnvatoPreview = activeTab.url && previewDomains.some(domain => activeTab.url.includes(domain));
-            const isEnvatoSite = activeTab.url && envatoDomains.some(domain => activeTab.url.includes(domain));
+            const isEnvatoPreview = activeTab.url && shared && shared.isEnvatoPreviewSite(activeTab.url);
+            const isEnvatoSite = activeTab.url && shared && shared.isEnvatoMarketplaceSite(activeTab.url);
 
             if (isEnvatoSite) {
                 if (envatoControls) envatoControls.classList.remove('hidden');
                 if (notEnvatoMessage) notEnvatoMessage.classList.add('hidden');
 
-                const siteName = getSiteName(activeTab.url);
+                const siteName = shared ? shared.getSiteName(activeTab.url) : 'Envato';
 
-                if (envatoDomainText) {
-                    envatoDomainText.textContent = isEnvatoPreview ? `You are viewing a preview on ${siteName}` : `You are browsing ${siteName}`;
-                }
+                renderDomainHeading(
+                    isEnvatoPreview ? 'Viewing Preview on' : 'Browsing',
+                    siteName
+                );
 
                 if (isEnvatoPreview) {
                     if (removeNowBtn) removeNowBtn.classList.remove('hidden');
@@ -504,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
                 } else if (activeTab.url.includes('/item/')) {
                     if (removeNowBtn) removeNowBtn.classList.add('hidden');
-                    if (envatoDomainText) envatoDomainText.textContent = `Viewing Product on ${siteName}`;
+                    renderDomainHeading('Viewing Product on', siteName);
                     renderContextState({
                         eyebrow: 'Loading product context',
                         title: 'Fetching live product details',
@@ -532,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 hideContextState();
                                 if (productTitleText) productTitleText.textContent = details.title;
                                 if (itemDetailsContainer) itemDetailsContainer.classList.remove('hidden');
-                                const itemId = details.itemId || extractItemIdFromUrl(activeTab.url);
+                                const itemId = details.itemId || (shared ? shared.extractItemIdFromUrl(activeTab.url) : null);
                                 
                                 const renderUI = (finalImageUrl) => {
                                     const imageEl = document.getElementById('itemDetailsImage');
@@ -607,10 +594,26 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function loadSettings() {
-        chrome.storage.sync.get(['autoRemove', 'widgetMode', 'hideAds', 'hidePromoBar'], function (result) {
+        chrome.storage.sync.get(['autoRemove', 'widgetMode', storageKeys.hideAds, storageKeys.legacyHideAds], function (result) {
+            const hideAdsEnabled = shared
+                ? shared.readHideAdsPreference(result)
+                : (result[storageKeys.hideAds] === true || result[storageKeys.legacyHideAds] === true);
+
+            if (shared && shared.hasLegacyHideAdsPreference(result)) {
+                const patch = {};
+                if (hideAdsEnabled && result[storageKeys.hideAds] !== true) {
+                    patch[storageKeys.hideAds] = true;
+                }
+                chrome.storage.sync.remove(storageKeys.legacyHideAds, function () {
+                    if (Object.keys(patch).length > 0) {
+                        chrome.storage.sync.set(patch);
+                    }
+                });
+            }
+
             if (autoRemoveCheckbox) autoRemoveCheckbox.checked = (result.autoRemove !== false);
             if (widgetModeCheckbox) widgetModeCheckbox.checked = (result.widgetMode === true); // defaults to false
-            if (hideAdsCheckbox) hideAdsCheckbox.checked = (result.hideAds === true || result.hidePromoBar === true); // defaults to false
+            if (hideAdsCheckbox) hideAdsCheckbox.checked = hideAdsEnabled;
             refreshStatusPills();
             checkDomain();
         });
@@ -621,11 +624,10 @@ document.addEventListener('DOMContentLoaded', function () {
         chrome.storage.sync.set({ 
             autoRemove: autoRemoveCheckbox.checked,
             widgetMode: widgetModeCheckbox.checked,
-            hideAds: hideAdsCheckbox.checked,
-            hidePromoBar: false
+            [storageKeys.hideAds]: hideAdsCheckbox.checked
         });
         chrome.storage.local.set({
-            envatoXperienceHideAds: hideAdsCheckbox.checked
+            [storageKeys.hideAdsMirror]: hideAdsCheckbox.checked
         });
         refreshStatusPills();
         checkDomain();

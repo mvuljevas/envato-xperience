@@ -1,6 +1,13 @@
 if (window === window.top) {
+  const shared = window.EnvatoXperienceShared;
+  if (!shared) {
+    console.warn("[Envato Xperience] Shared helpers unavailable in marketplace-init.");
+  }
+
   const root = document.documentElement;
-  const localKey = "envatoXperienceHideAds";
+  const localKey = shared ? shared.STORAGE_KEYS.hideAdsMirror : "envatoXperienceHideAds";
+  const hideAdsKey = shared ? shared.STORAGE_KEYS.hideAds : "hideAds";
+  const legacyHideAdsKey = shared ? shared.STORAGE_KEYS.legacyHideAds : "hidePromoBar";
 
   function applyHideAdsState(enabled) {
     root.dataset.envatoHideAds = enabled ? "true" : "false";
@@ -12,12 +19,25 @@ if (window === window.top) {
     }
   });
 
-  chrome.storage.sync.get(["hideAds", "hidePromoBar"], function (syncResult) {
-    const hideAdsEnabled =
-      syncResult.hideAds === true || syncResult.hidePromoBar === true;
+  chrome.storage.sync.get([hideAdsKey, legacyHideAdsKey], function (syncResult) {
+    const hideAdsEnabled = shared
+      ? shared.readHideAdsPreference(syncResult)
+      : syncResult.hideAds === true || syncResult.hidePromoBar === true;
 
     applyHideAdsState(hideAdsEnabled);
     chrome.storage.local.set({ [localKey]: hideAdsEnabled });
+
+    if (shared && shared.hasLegacyHideAdsPreference(syncResult)) {
+      const patch = {};
+      if (hideAdsEnabled && syncResult[hideAdsKey] !== true) {
+        patch[hideAdsKey] = true;
+      }
+      chrome.storage.sync.remove(legacyHideAdsKey, function () {
+        if (Object.keys(patch).length > 0) {
+          chrome.storage.sync.set(patch);
+        }
+      });
+    }
   });
 
   chrome.storage.onChanged.addListener(function (changes, areaName) {
@@ -26,11 +46,8 @@ if (window === window.top) {
       return;
     }
 
-    if (areaName === "sync" && (changes.hideAds || changes.hidePromoBar)) {
-      const nextValue = changes.hideAds
-        ? changes.hideAds.newValue === true
-        : changes.hidePromoBar.newValue === true;
-
+    if (areaName === "sync" && changes[hideAdsKey]) {
+      const nextValue = changes[hideAdsKey].newValue === true;
       applyHideAdsState(nextValue);
       chrome.storage.local.set({ [localKey]: nextValue });
     }
