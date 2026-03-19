@@ -1,0 +1,27 @@
+html[data-envato-hide-ads="true"] #market-banner,
+html[data-envato-hide-ads="true"] .shared-banner_component__bannerTop,
+html[data-envato-hide-ads="true"] .headerstrip-wrapper,
+html[data-envato-hide-ads="true"] .headerstrip,
+html[data-envato-hide-ads="true"] .elements-nav__container,
+html[data-envato-hide-ads="true"] .elements-nav__main-link,
+html[data-envato-hide-ads="true"] .shared-global_header-elements_nav_component__root,
+html[data-envato-hide-ads="true"] .shared-global_header-elements_nav_component__mainLink,
+html[data-envato-hide-ads="true"] .cross-sell,
+html[data-envato-hide-ads="true"] .home-elements_items_block_component__root,
+html[data-envato-hide-ads="true"] .shared-global_footer-cross_sell_component__root,
+html[data-envato-hide-ads="true"] .shared-global_footer-cross_sell_banner_component__root {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-envato-hide-ads="true"] .shared-global_header-global_header_component__bannerPlaceholder {
+  padding-top: 0 !important;
+}

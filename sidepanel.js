@@ -36,6 +36,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const itemDetailsContainer = document.getElementById('itemDetailsContainer');
     const itemDetailsImage = document.getElementById('itemDetailsImage');
     const itemImageWrapper = document.querySelector('.image-wrapper');
+    const productMetaText = document.getElementById('productMetaText');
+    const itemDetailsPreview = document.getElementById('itemDetailsPreview');
 
     function clearChildren(element) {
         if (element) {
@@ -89,6 +91,14 @@ document.addEventListener('DOMContentLoaded', function () {
     function resetProductCard() {
         if (itemDetailsContainer) itemDetailsContainer.classList.add('hidden');
         if (productTitleText) productTitleText.textContent = '';
+        if (productMetaText) {
+            productMetaText.textContent = '';
+            productMetaText.classList.add('hidden');
+        }
+        if (itemDetailsPreview) {
+            itemDetailsPreview.removeAttribute('href');
+            itemDetailsPreview.classList.add('hidden');
+        }
         setImageSource(itemDetailsImage, null);
     }
 
@@ -201,15 +211,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (response.oldPrice) {
             const oldPrice = document.createElement('span');
-            oldPrice.style.cssText = 'text-decoration: line-through; text-decoration-thickness: 2px; color: #868e96; font-size: 16px; font-weight: 600; margin-right: 6px;';
+            oldPrice.className = 'product-price-old';
             oldPrice.textContent = response.oldPrice;
             priceEl.appendChild(oldPrice);
         }
 
         const currentPrice = document.createElement('span');
-        currentPrice.style.cssText = response.oldPrice
-            ? 'color: #6fab35; font-size: 24px;'
-            : 'font-size: 24px;';
+        currentPrice.className = response.oldPrice
+            ? 'product-price-current'
+            : 'product-price-current is-regular';
         currentPrice.textContent = response.price || '--';
         priceEl.appendChild(currentPrice);
     }
@@ -234,16 +244,70 @@ document.addEventListener('DOMContentLoaded', function () {
         cartSvg.appendChild(createSvgElement('circle', { cx: '20', cy: '21', r: '1' }));
         cartSvg.appendChild(createSvgElement('path', { d: 'M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6' }));
 
-        const textWrapper = document.createElement('span');
-        const salesValue = document.createElement('strong');
-        salesValue.style.fontWeight = '600';
+        const textWrapper = document.createElement('div');
+        textWrapper.style.display = 'flex';
+        textWrapper.style.flexDirection = 'column';
+        textWrapper.style.gap = '3px';
+
+        const salesValue = document.createElement('span');
+        salesValue.className = 'product-sales-value';
         salesValue.textContent = response.sales || '--';
+
+        const salesLabel = document.createElement('span');
+        salesLabel.className = 'product-sales-label';
+        salesLabel.textContent = 'Sales';
+
         textWrapper.appendChild(salesValue);
-        textWrapper.appendChild(document.createTextNode(' Sales'));
+        textWrapper.appendChild(salesLabel);
 
         salesEl.appendChild(cartSvg);
-        salesEl.appendChild(document.createTextNode(' '));
         salesEl.appendChild(textWrapper);
+    }
+
+    function renderMeta(metaEl, response) {
+        if (!metaEl) return;
+
+        clearChildren(metaEl);
+
+        const author = response.author || '';
+        const category = response.category || '';
+
+        if (!author && !category) {
+            metaEl.classList.add('hidden');
+            return;
+        }
+
+        metaEl.classList.remove('hidden');
+
+        if (author) {
+            metaEl.appendChild(document.createTextNode('by '));
+            const authorName = document.createElement('strong');
+            authorName.textContent = author;
+            metaEl.appendChild(authorName);
+        }
+
+        if (author && category) {
+            metaEl.appendChild(document.createTextNode(' in '));
+        }
+
+        if (category) {
+            const categoryName = document.createElement('strong');
+            categoryName.textContent = category;
+            metaEl.appendChild(categoryName);
+        }
+    }
+
+    function renderPreviewButton(previewEl, response) {
+        if (!previewEl) return;
+
+        if (response.livePreviewUrl) {
+            previewEl.href = response.livePreviewUrl;
+            previewEl.classList.remove('hidden');
+            return;
+        }
+
+        previewEl.removeAttribute('href');
+        previewEl.classList.add('hidden');
     }
 
     function parseCompactNumber(value) {
@@ -479,9 +543,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                     const ratingEl = document.getElementById('itemDetailsRating');
                                     const updateEl = document.getElementById('itemDetailsUpdate');
                                     
+                                    renderMeta(productMetaText, details);
                                     renderPrice(priceEl, details);
                                     renderSales(salesEl, details);
                                     renderRating(ratingEl, details, itemId);
+                                    renderPreviewButton(itemDetailsPreview, details);
 
                                     if (updateEl) {
                                         if (details.lastUpdate) {
@@ -557,6 +623,9 @@ document.addEventListener('DOMContentLoaded', function () {
             widgetMode: widgetModeCheckbox.checked,
             hideAds: hideAdsCheckbox.checked,
             hidePromoBar: false
+        });
+        chrome.storage.local.set({
+            envatoXperienceHideAds: hideAdsCheckbox.checked
         });
         refreshStatusPills();
         checkDomain();

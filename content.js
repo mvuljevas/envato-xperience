@@ -7,7 +7,6 @@
 let panelContainer = null;
 let panelWrapperRef = null;
 let panelVisible = false;
-let promoSuppressionStyle = null;
 
 /**
  * Creates and injects the floating panel iframe using Shadow DOM
@@ -126,47 +125,8 @@ function isEnvatoMarketplaceSite(url = window.location.hostname) {
 }
 
 function setPromoSuppression(enabled) {
-  const shouldSuppress = enabled === true && isEnvatoMarketplaceSite();
-
-  if (!shouldSuppress) {
-    if (promoSuppressionStyle) {
-      promoSuppressionStyle.remove();
-      promoSuppressionStyle = null;
-    }
-    return;
-  }
-
-  if (!promoSuppressionStyle) {
-    promoSuppressionStyle = document.createElement("style");
-    promoSuppressionStyle.id = "envato-xperience-promo-suppression";
-    promoSuppressionStyle.textContent = `
-      #market-banner,
-      .shared-banner_component__bannerTop,
-      .headerstrip-wrapper,
-      .headerstrip,
-      .home-elements_items_block_component__root,
-      .shared-global_footer-cross_sell_component__root,
-      .shared-global_footer-cross_sell_banner_component__root {
-        display: none !important;
-        height: 0 !important;
-        min-height: 0 !important;
-        max-height: 0 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        overflow: hidden !important;
-      }
-
-      .shared-global_header-global_header_component__bannerPlaceholder {
-        padding-top: 0 !important;
-      }
-    `;
-    document.documentElement.appendChild(promoSuppressionStyle);
-    return;
-  }
-
-  if (!promoSuppressionStyle.isConnected) {
-    document.documentElement.appendChild(promoSuppressionStyle);
-  }
+  document.documentElement.dataset.envatoHideAds =
+    enabled === true && isEnvatoMarketplaceSite() ? "true" : "false";
 }
 
 /**
@@ -260,6 +220,36 @@ function extractItemDetails() {
       if (bodySalesMatch) sales = bodySalesMatch[1];
   }
 
+  let author = '';
+  const authorEl = document.querySelector('main a[href^="/user/"], main a[href*="themeforest.net/user/"], main a[href*="codecanyon.net/user/"]');
+  if (authorEl) {
+      author = authorEl.textContent.trim().replace(/^By\s+/i, '');
+  }
+  if (!author) {
+      const titleAuthorMatch = document.title.match(/\sby\s(.+?)\s\|\s(?:ThemeForest|CodeCanyon)/i);
+      if (titleAuthorMatch) {
+          author = titleAuthorMatch[1].trim();
+      }
+  }
+
+  let category = '';
+  const titleHeading = document.querySelector('h1');
+  const categoryLinks = Array.from(document.querySelectorAll('a[href*="/category/"]'))
+      .filter((el) => titleHeading
+          ? (el.compareDocumentPosition(titleHeading) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+          : true)
+      .map((el) => el.textContent.trim())
+      .filter((text) => text && !/^home$/i.test(text) && !/^files$/i.test(text) && !/^all items$/i.test(text));
+  if (categoryLinks.length > 0) {
+      category = categoryLinks[categoryLinks.length - 1];
+  }
+
+  let livePreviewUrl = '';
+  const livePreviewEl = document.querySelector('a[href*="/full_screen_preview/"]');
+  if (livePreviewEl && livePreviewEl.href) {
+      livePreviewUrl = livePreviewEl.href;
+  }
+
   let rating = '';
   let ratingCount = '';
 
@@ -330,7 +320,22 @@ function extractItemDetails() {
   const timeEl = document.querySelector('time.updated, time[itemprop="dateModified"], .last-update-date');
   if (timeEl) lastUpdate = timeEl.textContent.trim();
 
-  return { itemId, title, imageUrl, isHighResImage, price, oldPrice, sales, rating, ratingCount, lastUpdate, isItemPage: true };
+  return {
+    itemId,
+    title,
+    author,
+    category,
+    imageUrl,
+    isHighResImage,
+    price,
+    oldPrice,
+    sales,
+    rating,
+    ratingCount,
+    lastUpdate,
+    livePreviewUrl,
+    isItemPage: true
+  };
 }
 
 /**
