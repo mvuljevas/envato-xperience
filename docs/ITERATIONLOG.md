@@ -89,3 +89,38 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Validación: inspección de DOM/computed styles con Playwright; el nodo `.shared-global_header-global_header_component__bannerPlaceholder` apareció con clases `desktopHeader bannerPlaceholder`; `node --check marketplace-init.js`; `npm run smoke:extension` con `3 passed`; requiere confirmar visualmente tras recargar la extensión.
 - Riesgos pendientes: si vuelve a quedar espacio residual en alguna vista, habrá que encontrar el nodo espaciador exacto en esa variante, sin tocar el contenedor del header.
 - Próximo paso lógico: hard refresh en una home/category con `Hide Ads` activo y revisar si desaparece el gap sin ocultar el header; si persiste, capturar el selector exacto del spacer residual.
+
+### 2026-03-19 - Support card en Settings
+- Objetivo: añadir una superficie discreta de funding dentro de `Settings` con copy breve y CTA visual estilo GitHub Sponsors.
+- Archivos: `sidepanel.html`, `sidepanel.css`, `README.md`.
+- Validación: requiere recarga de la extensión y comprobación visual del layout del botón dentro de la pestaña `Settings`.
+- Riesgos pendientes: afinar copy o añadir más métodos de apoyo sin saturar visualmente el panel.
+- Próximo paso lógico: validar la proporción visual del botón y, si el tono te convence, extender luego la sección a PayPal o Buy Me a Coffee.
+
+### 2026-03-19 - Segundo CTA de Support
+- Objetivo: ampliar la card de funding con un segundo botón de PayPal manteniendo el mismo patrón visual del CTA principal.
+- Archivos: `sidepanel.html`, `sidepanel.css`.
+- Validación: requiere recarga de la extensión y comprobación visual del alineado de ambos botones en `Settings`.
+- Riesgos pendientes: revisar comportamiento responsive si luego se agregan más métodos de apoyo en la misma fila.
+- Próximo paso lógico: validar visualmente la pareja `Sponsor` + `PayPal` y decidir si el siguiente método entra en una segunda fila o en un selector más compacto.
+
+### 2026-03-19 - Tercer CTA de Support
+- Objetivo: completar la fila de funding con un tercer botón para Buy Me a Coffee entre GitHub Sponsors y PayPal.
+- Archivos: `sidepanel.html`, `sidepanel.css`.
+- Validación: requiere recarga de la extensión y comprobación visual del reparto horizontal de los tres botones en `Settings`.
+- Riesgos pendientes: con tres CTAs la fila queda más densa; puede requerir segunda fila o labels más cortos si el ancho útil no alcanza.
+- Próximo paso lógico: validar visualmente la fila de tres botones y decidir si conviene mantenerla así o pasar a un layout de dos filas.
+
+### 2026-03-19 - Copy humano e iconos de Support
+- Objetivo: hacer el mensaje de funding más honesto y natural, dejando claro que se están construyendo varias herramientas al mismo tiempo, y reforzar la visibilidad de los iconos de los CTAs.
+- Archivos: `sidepanel.html`, `sidepanel.css`.
+- Validación: requiere recarga de la extensión y comprobación visual del texto y del icono de GitHub Sponsors dentro de `Settings`.
+- Riesgos pendientes: si el copy se siente todavía demasiado largo para el ancho del panel, habrá que compactarlo una vuelta más sin perder humanidad.
+- Próximo paso lógico: revisar visualmente la card y, si el texto se siente bien, documentar luego la sección `Support` de forma más formal en `README` o `WORKFLOW`.
+
+### 2026-03-19 - Support layout en stack
+- Objetivo: mejorar la legibilidad de los iconos y repartir mejor el ancho de los CTAs, dejando `Sponsor` arriba y `Coffee` + `PayPal` debajo.
+- Archivos: `sidepanel.html`, `sidepanel.css`.
+- Validación: requiere recarga de la extensión y comprobación visual del nuevo stack y de los iconos refinados.
+- Riesgos pendientes: si el botón superior sigue viéndose demasiado pesado, habrá que bajar un poco su altura o ajustar el peso del label.
+- Próximo paso lógico: validar visualmente el nuevo stack y, si queda bien, ya recién entonces commitear el bloque completo de `Support`.
