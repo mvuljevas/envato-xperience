@@ -8,14 +8,41 @@ if (window === window.top) {
   const localKey = shared ? shared.STORAGE_KEYS.hideAdsMirror : "envatoXperienceHideAds";
   const hideAdsKey = shared ? shared.STORAGE_KEYS.hideAds : "hideAds";
   const legacyHideAdsKey = shared ? shared.STORAGE_KEYS.legacyHideAds : "hidePromoBar";
+  const hostMirrorKey = `${localKey}:host`;
 
   function applyHideAdsState(enabled) {
     root.dataset.envatoHideAds = enabled ? "true" : "false";
   }
 
+  function readHostMirror() {
+    try {
+      const value = window.localStorage.getItem(hostMirrorKey);
+      if (value === "true") return true;
+      if (value === "false") return false;
+    } catch (error) {
+      console.warn("[Envato Xperience] Unable to read host hide-ads mirror.", error);
+    }
+
+    return null;
+  }
+
+  function writeHostMirror(enabled) {
+    try {
+      window.localStorage.setItem(hostMirrorKey, enabled ? "true" : "false");
+    } catch (error) {
+      console.warn("[Envato Xperience] Unable to write host hide-ads mirror.", error);
+    }
+  }
+
+  const mirroredHideAds = readHostMirror();
+  if (typeof mirroredHideAds === "boolean") {
+    applyHideAdsState(mirroredHideAds);
+  }
+
   chrome.storage.local.get([localKey], function (localResult) {
     if (typeof localResult[localKey] === "boolean") {
       applyHideAdsState(localResult[localKey]);
+      writeHostMirror(localResult[localKey]);
     }
   });
 
@@ -25,6 +52,7 @@ if (window === window.top) {
       : syncResult.hideAds === true || syncResult.hidePromoBar === true;
 
     applyHideAdsState(hideAdsEnabled);
+    writeHostMirror(hideAdsEnabled);
     chrome.storage.local.set({ [localKey]: hideAdsEnabled });
 
     if (shared && shared.hasLegacyHideAdsPreference(syncResult)) {
@@ -42,13 +70,16 @@ if (window === window.top) {
 
   chrome.storage.onChanged.addListener(function (changes, areaName) {
     if (areaName === "local" && changes[localKey]) {
-      applyHideAdsState(changes[localKey].newValue === true);
+      const nextValue = changes[localKey].newValue === true;
+      applyHideAdsState(nextValue);
+      writeHostMirror(nextValue);
       return;
     }
 
     if (areaName === "sync" && changes[hideAdsKey]) {
       const nextValue = changes[hideAdsKey].newValue === true;
       applyHideAdsState(nextValue);
+      writeHostMirror(nextValue);
       chrome.storage.local.set({ [localKey]: nextValue });
     }
   });

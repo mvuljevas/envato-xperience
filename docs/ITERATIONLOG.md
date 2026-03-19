@@ -82,3 +82,10 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Validación: `node --check scripts/extension-smoke.spec.cjs`; `npm run smoke:extension` con `3 passed`; validación explícita de `item page`, `top-sellers`, y `downloads` autenticado.
 - Riesgos pendientes: no se puede reutilizar un perfil real de Chrome mientras el `user data dir` global siga bloqueado por otra instancia; para attach real hace falta `--remote-debugging-port`.
 - Próximo paso lógico: commitear este bloque y dejar el smoke como baseline para futuras iteraciones funcionales.
+
+### 2026-03-19 - Corrección del placeholder del header
+- Objetivo: revertir el colapso agresivo del nodo `bannerPlaceholder` tras comprobar que en ThemeForest también actúa como contenedor del desktop header.
+- Archivos: `marketplace-init.js`, `marketplace-overrides.css`, `README.md`, `docs/WORKFLOW.md`.
+- Validación: inspección de DOM/computed styles con Playwright; el nodo `.shared-global_header-global_header_component__bannerPlaceholder` apareció con clases `desktopHeader bannerPlaceholder`; `node --check marketplace-init.js`; `npm run smoke:extension` con `3 passed`; requiere confirmar visualmente tras recargar la extensión.
+- Riesgos pendientes: si vuelve a quedar espacio residual en alguna vista, habrá que encontrar el nodo espaciador exacto en esa variante, sin tocar el contenedor del header.
+- Próximo paso lógico: hard refresh en una home/category con `Hide Ads` activo y revisar si desaparece el gap sin ocultar el header; si persiste, capturar el selector exacto del spacer residual.
