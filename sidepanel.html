@@ -2,15 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Envato Previews Frame Remover</title>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600&family=Noto+Sans:wght@400;500;600&display=swap"
-      rel="stylesheet"
-    />
-
+    <title>Envato Xperience</title>
     <link rel="stylesheet" href="sidepanel.css" />
   </head>
 
@@ -21,7 +13,7 @@
           &times;
         </button>
         <img src="images/envato-logo-dark.svg" alt="Envato Logo" class="logo" />
-        <h1>Frame Remover</h1>
+        <h1>Envato Xperience</h1>
         <div class="tabs">
           <div class="tab-glider"></div>
           <button class="tab-btn active" data-tab="action">Status</button>
@@ -55,7 +47,7 @@
                  <!-- Header Row (Title & Price) -->
                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px;">
                      <!-- Product Title -->
-                     <p class="status-text" id="productTitleText" style="color: #262626; font-family: 'Oswald', sans-serif; font-size: 18px; font-weight: 300; margin: 0; line-height: 1.25; text-align: left; flex: 1;">
+                     <p class="status-text" id="productTitleText" style="color: #262626; font-family: 'Arial Narrow', 'Helvetica Neue', sans-serif; font-size: 18px; font-weight: 300; margin: 0; line-height: 1.25; text-align: left; flex: 1;">
                      </p>
                      
                      <!-- Price -->
@@ -83,7 +75,6 @@
 
               <button id="removeNow" class="main-action">Remove Frame</button>
             </div>
-          </div>
 
           <!-- Not Envato UI -->
           <div
@@ -110,7 +101,7 @@
             </label>
           </div>
           <div class="card control-group">
-            <label for="widgetMode">Widget Mode (Test)</label>
+            <label for="widgetMode">Floating Widget</label>
             <label class="switch">
               <input type="checkbox" id="widgetMode" />
               <span class="slider"></span>
@@ -120,9 +111,10 @@
           <h3 class="settings-header">About</h3>
           <div class="card about-info">
             <p><strong>Version:</strong> 1.0.0</p>
+            <p><strong>Author:</strong> Mauricio Vuljevas</p>
             <p>
-              Automatically redirects ThemeForest and CodeCanyon previews to
-              their actual content, saving you from annoying frames.
+              Removes Envato preview frames and preserves product context when
+              Floating Widget is enabled.
             </p>
           </div>
         </div>
@@ -148,9 +140,9 @@
           </svg>
         </a>
         <p>
-          Crafted with love in 🇺🇾 by
+          Crafted by
           <a
-            href="https://www.mvuljevas.com?utm_source=noframevato"
+            href="https://www.mvuljevas.com?utm_source=envatoxperience"
             target="_blank"
             >Mauricio Vuljevas</a
           >
@@ -158,6 +150,7 @@
       </div>
     </div>
 
+    <script src="image-cache.js"></script>
     <script src="sidepanel.js"></script>
   </body>
 </html>

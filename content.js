@@ -1,5 +1,5 @@
 /**
- * Envato Frame Remover - Content Script
+ * Envato Xperience - Content Script
  * 1. Handles frame removal on Envato pages
  * 2. Injects the floating in-page sidepanel using Shadow DOM for style isolation
  */
@@ -80,6 +80,34 @@ function isValidUrl(url) {
   }
 }
 
+function extractFirstNumericValue(text) {
+  if (!text) return "";
+  const match = text.match(/[\d]+(?:\.\d+)?/);
+  return match ? match[0] : "";
+}
+
+function normalizeItemTitle(title) {
+  if (!title) return "";
+
+  return title
+    .replace(/^Reviews for\s+/i, "")
+    .replace(/^Discussion on\s+/i, "")
+    .replace(/^Support for\s+/i, "")
+    .replace(/\s+-\s+ThemeForest$/i, "")
+    .replace(/\s+-\s+CodeCanyon$/i, "")
+    .trim();
+}
+
+function isEnvatoMarketplaceLogo(url) {
+  return typeof url === "string" && /public-assets\.envato-static\.com\/assets\/logos\/marketplaces\//i.test(url);
+}
+
+function extractItemIdFromUrl(url = window.location.href) {
+  if (!url || typeof url !== "string") return "";
+  const match = url.match(/\/item\/[^/]+\/(?:(?:reviews|comments|support)\/)?(\d+)(?:[/?#]|$)/i);
+  return match ? match[1] : "";
+}
+
 /**
  * Logic to remove the Envato preview frame or apply Widget Mode
  */
@@ -113,7 +141,7 @@ function removeFrame(useWidgetMode = false) {
       if (document.body.style.marginTop) document.body.style.marginTop = "0px";
     }
   } catch (error) {
-    console.error("[Envato Frame Remover] Error removing frame:", error);
+    console.error("[Envato Xperience] Error removing frame:", error);
   }
 }
 
@@ -121,9 +149,8 @@ function removeFrame(useWidgetMode = false) {
  * Extracts metadata from the Envato item details page
  */
 function extractItemDetails() {
-  let title = document.querySelector('h1')?.textContent.trim() || document.title;
-  if (title.includes(' - ThemeForest')) title = title.replace(' - ThemeForest', '');
-  if (title.includes(' - CodeCanyon')) title = title.replace(' - CodeCanyon', '');
+  const itemId = extractItemIdFromUrl();
+  let title = normalizeItemTitle(document.querySelector('h1')?.textContent.trim() || document.title);
 
   let imageUrl = '';
   let isHighResImage = false;
@@ -136,7 +163,7 @@ function extractItemDetails() {
   } else {
       // Fallback to og:image if native preview container is completely missing
       const ogImage = document.querySelector('meta[property="og:image"]');
-      if (ogImage) imageUrl = ogImage.content;
+      if (ogImage && !isEnvatoMarketplaceLogo(ogImage.content)) imageUrl = ogImage.content;
   }
 
   let price = '';
@@ -174,6 +201,30 @@ function extractItemDetails() {
 
   let rating = '';
   let ratingCount = '';
+
+  const reviewNavLink = document.querySelector('a.js-item-navigation-reviews, a[href*="/reviews/"]');
+  if (reviewNavLink) {
+      const reviewStarsEl = reviewNavLink.querySelector('.rating-detailed-small__stars');
+      const reviewCountEl = reviewNavLink.querySelector('.item-navigation-reviews-comments');
+
+      if (reviewStarsEl && !rating) {
+          rating = extractFirstNumericValue(reviewStarsEl.textContent);
+      }
+
+      if (reviewCountEl && !ratingCount) {
+          ratingCount = reviewCountEl.textContent.trim();
+      }
+  }
+
+  if (!ratingCount) {
+      const reviewSummaryCount = Array.from(document.querySelectorAll('p strong, strong'))
+          .map((el) => el.textContent.trim())
+          .find((text) => /^\d[\d,]*(?:\.\d+)?[kKmM]?\s+Reviews$/i.test(text));
+
+      if (reviewSummaryCount) {
+          ratingCount = reviewSummaryCount.replace(/\s+reviews$/i, '');
+      }
+  }
 
   const rMeta = document.querySelector('[itemprop="ratingValue"]');
   if (rMeta) rating = rMeta.getAttribute('content') || rMeta.textContent;
@@ -218,13 +269,14 @@ function extractItemDetails() {
   const timeEl = document.querySelector('time.updated, time[itemprop="dateModified"], .last-update-date');
   if (timeEl) lastUpdate = timeEl.textContent.trim();
 
-  return { title, imageUrl, isHighResImage, price, oldPrice, sales, rating, ratingCount, lastUpdate, isItemPage: true };
+  return { itemId, title, imageUrl, isHighResImage, price, oldPrice, sales, rating, ratingCount, lastUpdate, isItemPage: true };
 }
 
 /**
  * Extracts product metadata from the native Envato header
  */
 function extractProductInfo() {
+  const currentItemId = extractItemIdFromUrl();
   let title = document.title;
   if (title.includes(' - ThemeForest')) title = title.replace(' - ThemeForest', '');
   if (title.includes(' - CodeCanyon')) title = title.replace(' - CodeCanyon', '');
@@ -240,7 +292,9 @@ function extractProductInfo() {
   let itemUrl = '';
   if (titleEl && titleEl.href) itemUrl = titleEl.href;
 
-  return { title, buyUrl, itemUrl };
+  const itemId = currentItemId || extractItemIdFromUrl(itemUrl);
+
+  return { itemId, title, buyUrl, itemUrl };
 }
 
 let widgetContainer = null;
@@ -274,90 +328,119 @@ function injectWidget(info) {
   const shadow = widgetContainer.attachShadow({ mode: "open" });
 
   const wrapper = document.createElement("div");
-  wrapper.innerHTML = `
-      <style>
-          :host {
-              position: fixed;
-              bottom: 24px;
-              right: 24px;
-              z-index: 2147483647;
-              font-family: 'Noto Sans', sans-serif;
-          }
-          .widget-box {
-              background: rgba(255, 255, 255, 0.85);
-              backdrop-filter: blur(12px);
-              -webkit-backdrop-filter: blur(12px);
-              border-radius: 12px;
-              padding: 16px 20px;
-              box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
-              border: 1px solid rgba(255, 255, 255, 0.5);
-              display: flex;
-              flex-direction: column;
-              gap: 12px;
-              transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-              animation: slideIn 0.5s ease-out forwards;
-          }
-          @keyframes slideIn {
-              from { opacity: 0; transform: translateY(20px); }
-              to { opacity: 1; transform: translateY(0); }
-          }
-          .widget-box:hover {
-              transform: translateY(-4px);
-              box-shadow: 0 14px 45px rgba(0, 0, 0, 0.2);
-          }
-          .w-title {
-              font-size: 14px;
-              font-weight: 600;
-              color: #262626;
-              margin: 0;
-              max-width: 250px;
-              white-space: nowrap;
-              overflow: hidden;
-              text-overflow: ellipsis;
-          }
-          .w-actions {
-              display: flex;
-              gap: 8px;
-          }
-          .w-btn {
-              text-decoration: none;
-              font-size: 13px;
-              font-weight: 600;
-              padding: 10px 14px;
-              border-radius: 8px;
-              cursor: pointer;
-              text-align: center;
-              transition: all 0.2s;
-              flex: 1;
-              box-sizing: border-box;
-          }
-          .w-btn-buy {
-              background: #82b641;
-              color: white;
-              box-shadow: 0 4px 10px rgba(130, 182, 65, 0.3);
-          }
-          .w-btn-buy:hover {
-              background: #6fab35;
-              transform: translateY(-1px);
-              box-shadow: 0 6px 15px rgba(130, 182, 65, 0.4);
-          }
-          .w-btn-back {
-              background: rgba(0,0,0,0.06);
-              color: #495057;
-          }
-          .w-btn-back:hover {
-              background: rgba(0,0,0,0.1);
-              color: #262626;
-          }
-      </style>
-      <div class="widget-box">
-          <p class="w-title" title="${info.title}">${info.title || 'Envato Product'}</p>
-          <div class="w-actions">
-              ${info.itemUrl ? `<a href="${info.itemUrl}" class="w-btn w-btn-back">Details</a>` : ''}
-              ${info.buyUrl ? `<a href="${info.buyUrl}" class="w-btn w-btn-buy" target="_blank">Buy Now</a>` : ''}
-          </div>
-      </div>
+  const style = document.createElement("style");
+  style.textContent = `
+      :host {
+          position: fixed;
+          bottom: 24px;
+          right: 24px;
+          z-index: 2147483647;
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      .widget-box {
+          background: rgba(255, 255, 255, 0.85);
+          backdrop-filter: blur(12px);
+          -webkit-backdrop-filter: blur(12px);
+          border-radius: 12px;
+          padding: 16px 20px;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+          border: 1px solid rgba(255, 255, 255, 0.5);
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          animation: slideIn 0.5s ease-out forwards;
+      }
+      @keyframes slideIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+      }
+      .widget-box:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 14px 45px rgba(0, 0, 0, 0.2);
+      }
+      .w-title {
+          font-size: 14px;
+          font-weight: 600;
+          color: #262626;
+          margin: 0;
+          max-width: 250px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+      }
+      .w-actions {
+          display: flex;
+          gap: 8px;
+      }
+      .w-btn {
+          text-decoration: none;
+          font-size: 13px;
+          font-weight: 600;
+          padding: 10px 14px;
+          border-radius: 8px;
+          cursor: pointer;
+          text-align: center;
+          transition: all 0.2s;
+          flex: 1;
+          box-sizing: border-box;
+      }
+      .w-btn-buy {
+          background: #82b641;
+          color: white;
+          box-shadow: 0 4px 10px rgba(130, 182, 65, 0.3);
+      }
+      .w-btn-buy:hover {
+          background: #6fab35;
+          transform: translateY(-1px);
+          box-shadow: 0 6px 15px rgba(130, 182, 65, 0.4);
+      }
+      .w-btn-back {
+          background: rgba(0,0,0,0.06);
+          color: #495057;
+      }
+      .w-btn-back:hover {
+          background: rgba(0,0,0,0.1);
+          color: #262626;
+      }
   `;
+
+  const widgetBox = document.createElement("div");
+  widgetBox.className = "widget-box";
+
+  const title = document.createElement("p");
+  title.className = "w-title";
+  title.textContent = info.title || "Envato Product";
+  title.title = info.title || "Envato Product";
+  widgetBox.appendChild(title);
+
+  const actions = document.createElement("div");
+  actions.className = "w-actions";
+
+  if (isValidUrl(info.itemUrl)) {
+    const detailsLink = document.createElement("a");
+    detailsLink.className = "w-btn w-btn-back";
+    detailsLink.href = info.itemUrl;
+    detailsLink.textContent = "Details";
+    actions.appendChild(detailsLink);
+  }
+
+  if (isValidUrl(info.buyUrl)) {
+    const buyLink = document.createElement("a");
+    buyLink.className = "w-btn w-btn-buy";
+    buyLink.href = info.buyUrl;
+    buyLink.target = "_blank";
+    buyLink.rel = "noopener noreferrer";
+    buyLink.textContent = "Buy Now";
+    actions.appendChild(buyLink);
+  }
+
+  if (actions.childElementCount > 0) {
+    widgetBox.appendChild(actions);
+  }
+
+  wrapper.appendChild(style);
+  wrapper.appendChild(widgetBox);
 
   shadow.appendChild(wrapper);
   document.body.appendChild(widgetContainer);

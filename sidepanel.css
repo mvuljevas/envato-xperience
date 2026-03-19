@@ -9,7 +9,7 @@ body {
   color: #333;
   display: flex;
   flex-direction: column;
-  font-family: "Noto Sans", sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 14px;
   height: 100vh;
   margin: 0;
@@ -60,7 +60,7 @@ header {
 
 h1 {
   color: #ffffff;
-  font-family: "Oswald", sans-serif;
+  font-family: "Arial Narrow", "Helvetica Neue", sans-serif;
   font-size: 16px;
   font-weight: 500;
   left: 27px;
@@ -92,7 +92,7 @@ h1 {
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   flex: 1;
-  font-family: "Oswald", sans-serif;
+  font-family: "Arial Narrow", "Helvetica Neue", sans-serif;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 1.5px;
@@ -200,7 +200,7 @@ button.main-action {
   box-shadow: 0 4px 15px rgba(130, 182, 65, 0.3);
   color: white;
   cursor: pointer;
-  font-family: "Oswald", sans-serif;
+  font-family: "Arial Narrow", "Helvetica Neue", sans-serif;
   font-size: 15px;
   font-weight: 600;
   letter-spacing: 0.5px;
@@ -223,7 +223,7 @@ button.main-action:active {
 .settings-header {
   border-bottom: 1px solid #f0f0f0;
   color: #adb5bd;
-  font-family: "Oswald", sans-serif;
+  font-family: "Arial Narrow", "Helvetica Neue", sans-serif;
   font-size: 13px;
   letter-spacing: 1px;
   margin-bottom: 12px;
@@ -346,7 +346,7 @@ input:checked + .slider:before {
 
 .not-envato-container h2 {
   color: #868e96;
-  font-family: "Oswald", sans-serif;
+  font-family: "Arial Narrow", "Helvetica Neue", sans-serif;
   font-size: 15px;
   margin-bottom: 8px;
   text-transform: uppercase;
