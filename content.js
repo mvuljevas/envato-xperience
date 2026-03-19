@@ -8,6 +8,8 @@ let panelContainer = null;
 let panelWrapperRef = null;
 let panelVisible = false;
 const shared = window.EnvatoXperienceShared;
+const testBridgeEventName = "envato-xperience:test";
+let testBridgeInstalled = false;
 
 /**
  * Creates and injects the floating panel iframe using Shadow DOM
@@ -55,17 +57,70 @@ function createPanel() {
 /**
  * Toggles the visibility of the floating panel
  */
-function togglePanel() {
+function showPanel() {
   if (!panelContainer) {
     createPanel();
   }
 
-  panelVisible = !panelVisible;
-  if (panelVisible) {
+  panelVisible = true;
+  if (panelWrapperRef) {
     panelWrapperRef.classList.add("visible");
-  } else {
+  }
+}
+
+function hidePanel() {
+  panelVisible = false;
+  if (panelWrapperRef) {
     panelWrapperRef.classList.remove("visible");
   }
+}
+
+function togglePanel() {
+  if (panelVisible) {
+    hidePanel();
+  } else {
+    showPanel();
+  }
+}
+
+function dispatchTestBridgeState(requestId) {
+  document.dispatchEvent(
+    new CustomEvent(`${testBridgeEventName}:result`, {
+      detail: {
+        requestId: requestId || null,
+        panelVisible,
+        hasPanel: Boolean(panelContainer),
+        hideAdsEnabled: document.documentElement.dataset.envatoHideAds === "true",
+      },
+    }),
+  );
+}
+
+function installTestBridge() {
+  if (window !== window.top || testBridgeInstalled) return;
+
+  testBridgeInstalled = true;
+  document.addEventListener(testBridgeEventName, function (event) {
+    const detail = event.detail || {};
+
+    switch (detail.action) {
+      case "openPanel":
+        showPanel();
+        break;
+      case "closePanel":
+        hidePanel();
+        break;
+      case "togglePanel":
+        togglePanel();
+        break;
+      case "getState":
+        break;
+      default:
+        return;
+    }
+
+    dispatchTestBridgeState(detail.requestId);
+  });
 }
 
 /**
@@ -491,7 +546,9 @@ function injectWidget(info) {
  */
 function initialize() {
   if (window !== window.top) return; // Prevent execution inside iframes
-  
+
+  installTestBridge();
+
   chrome.storage.sync.get(["autoRemove", "widgetMode"], function (result) {
     const autoRemoveEnabled = result.autoRemove !== false; // Default to true if undefined
     const widgetModeEnabled = result.widgetMode === true; // Default to false
@@ -518,7 +575,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       sendResponse({ success: true });
       break;
     case "close_panel":
-      if (panelVisible) togglePanel(); // Toggle off
+      if (panelVisible) hidePanel();
       sendResponse({ success: true });
       break;
     case "remove_frame":
