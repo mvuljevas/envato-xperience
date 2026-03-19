@@ -24,3 +24,9 @@ Al modificar la extensión Envato Xperience y continuar con su desarrollo, los a
    - Las interacciones (como `hover`) deben sentirse orgánicas; añade siempre `transition: all 0.2s` mínimo.
    - Priorizar `Oswald` como tipografía de display en headings, tabs, labels y estados del panel. Si se necesita consistencia total, empaquetar la fuente localmente en la extensión; no depender de fuentes remotas.
    - Al retocar CSS del panel, lee primero los estilos existentes y evita pisar ajustes manuales del workspace si puedes encapsular el cambio con clases nuevas o archivos dedicados.
+
+6. **Persistencia de Contexto Operativo**:
+   - Al final de cada iteración relevante, actualizar `docs/ITERATIONLOG.md` con un resumen corto pero útil.
+   - Si se cambia arquitectura, flujo de carga, UX principal o compliance, actualizar también la doc viva correspondiente en la misma iteración.
+   - Al cerrar cada respuesta al usuario, indicar qué quedó validado, qué no quedó validado y sugerir el siguiente paso lógico.
+   - Si se generan snapshots o logs temporales para debugging, mencionarlos en el cierre de iteración y limpiar los que ya no aporten valor.

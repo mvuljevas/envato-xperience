@@ -6,8 +6,9 @@ Este documento dicta cómo debe organizarse, compilarse y testearse la extensió
 La herramienta está estructurada pura y netamente para Manifest V3. El flujo de información ideal de desarrollo será:
 - `manifest.json`: Punto de entrada que define qué permisos (`storage`, `activeTab`) y en qué URLs se ejecuta el content script.
 - `background.js`: Service worker. Duerme la mayor parte del tiempo, se despierta para atender el click en el ícono del navegador y rutear el mensaje a la pestaña activa para mostrar/esconder el panel lateral.
+- `envato-shared.js`: Helpers compartidos para detección de hosts Envato, parsing estable de `itemId`, naming de marketplace y compatibilidad de settings.
 - `marketplace-init.js`: Bootstrap liviano que corre en `document_start` para reflejar cuanto antes el estado de `Hide Ads` sobre `<html>`.
-- `marketplace-overrides.css`: Reglas declarativas tempranas para colapsar anuncios soportados de Envato sin depender de una inyección tardía.
+- `marketplace-overrides.css`: Reglas declarativas tempranas para colapsar anuncios soportados de Envato sin depender de una inyección tardía. Hoy cubre promos de header/footer, bloques de hosting/downloads, sidebars compartidos de browse y `top-sellers`, y promos de cuenta/descargas.
 - `content.js`: Se inyecta en la(s) web(s) vía permisos expandidos (`<all_urls>`).
    - Posee guardias (`window !== window.top`) para no inyectarse en iframes secundarios nativos de la págia destino y generar inyecciones duplicadas.
    - Lee el DOM nativo en la red Envato para guardar la "Preview Activa" en la memoria de la extensión (`chrome.storage.local`).
@@ -20,6 +21,7 @@ La herramienta está estructurada pura y netamente para Manifest V3. El flujo de
    - Expone `Hide Ads` como preferencia sincronizada.
 - `fonts/`: Tipografías locales empaquetadas para la UI del panel, evitando dependencias remotas.
 - `image-cache.js`: Gestiona el caché local de imágenes en `IndexedDB` para evitar inflar `chrome.storage.local`.
+- `.env.local.example`: Plantilla local para pruebas autenticadas con Playwright. Usa `ENVATO_TEST_USERNAME`, `ENVATO_TEST_PASSWORD` y `ENVATO_ACCOUNT_URL`.
 
 ## 2. Pruebas y Desarrollo Local
 
@@ -37,6 +39,7 @@ Dado el entorno de las Extensiones de Chrome, no hay un `npm run dev` nativo o l
    - una sub-vista de producto (`reviews`, `comments` o `support`) para confirmar continuidad de metadata e imagen
    - una página de browse/categoría para confirmar que el panel muestre un estado contextual y no un loading muerto
    - una página con promos soportadas para confirmar que `Hide Ads` no deja huecos ni flicker visible
+9. Si necesitas inspección autenticada del DOM real en páginas de cuenta o `downloads`, usa `/.env.local` basado en `.env.local.example`. No trackear credenciales en git.
 
 ## 3. Directriz de Integración
 Cualquier nueva función o corrección de bugs debe revisarse validando que ambas interacciones principales funcionen:
@@ -45,3 +48,28 @@ Cualquier nueva función o corrección de bugs debe revisarse validando que amba
 3. La continuidad de datos: el sidepanel debe seguir mostrando el mismo producto correcto aunque cambie la sub-ruta de Envato.
 4. La supresión temprana de promos: `Hide Ads` debe entrar antes del paint y no depender de un parche tardío en `content.js`.
 No rompas un modo para arreglar otro.
+
+## 4. Metodología Segura de Iteración
+Para evitar colapsos de contexto durante sesiones largas, cada iteración debe dejar rastro técnico mínimo en el repo y en la conversación:
+
+1. **Snapshot técnico breve**:
+   - Registrar qué archivos cambiaron.
+   - Registrar qué comportamiento se esperaba ajustar.
+   - Registrar qué validaciones se ejecutaron (`node --check`, recarga manual, smoke visual, etc.).
+
+2. **Log de iteración**:
+   - Añadir una entrada corta en `docs/ITERATIONLOG.md` cuando la iteración cambie comportamiento, arquitectura, scraping, UX visible o flujo de publicación.
+   - La entrada debe capturar: fecha, objetivo, archivos tocados, validación y riesgos pendientes.
+
+3. **Actualización de docs vivas**:
+   - Si cambia arquitectura, flujo de carga, storage, compliance, UX principal o naming, actualizar en la misma iteración el documento correspondiente (`WORKFLOW`, `COMPLIANCE`, `ROADMAP`, `README`, etc.).
+   - No dejar documentación estructural para "después".
+
+4. **Cierre obligatorio de iteración**:
+   - Resumir qué quedó hecho.
+   - Declarar explícitamente qué no se validó todavía.
+   - Sugerir el siguiente paso lógico inmediato.
+
+5. **Artefactos temporales**:
+   - Si se usan snapshots visuales, logs o resultados de smoke, deben conservarse solo mientras aporten valor a la iteración.
+   - No acumular basura temporal en el repo.

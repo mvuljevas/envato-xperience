@@ -12,7 +12,7 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 - **Floating Control Panel**: A sleek, non-intrusive side panel to manage settings on the fly.
 - **Premium UI**: "Glassmorphism" design with smooth, switch-like animations.
 - **Context Preservation (Floating Widget)**: Optionally injects an elegant floating button panel on the creator's real external website, retaining Envato's "Buy Now" and "Details" links even after the redirect.
-- **Hide Ads Toggle**: Optionally suppresses major Envato promotional surfaces such as top banners, Elements cross-sells, footer promos, and marketplace switcher ads.
+- **Hide Ads Toggle**: Optionally suppresses major Envato promotional surfaces such as top banners, Elements cross-sells, footer promos, marketplace switcher ads, `top-sellers` author sidebars, and account/download promos.
 - **Stable Product Identity**: Uses the canonical Envato `itemId` from `/item/.../<id>` URLs so product data stays aligned across item, reviews, comments, and support tabs.
 - **Local Image Cache**: Stores product hero images in `IndexedDB` with TTL and eviction rules instead of bloating extension storage.
 - **Contextual Status States**: Outside item pages, the panel switches to premium editorial states for browse, preview, and fallback contexts instead of showing a dead loading message.
@@ -45,8 +45,9 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 
 - **Manifest V3**: Compliant with the latest Chrome Extension standards, utilizing `chrome.storage.local` context passing mechanisms and full domain permissions `<all_urls>` for cross-origin widget injection.
 - **Architecture**:
+    - `envato-shared.js`: Shared helpers for Envato host detection, canonical `itemId` parsing, site naming, and settings compatibility/migration.
     - `marketplace-init.js`: Early `document_start` bootstrap that mirrors the `Hide Ads` setting into the page root before the marketplace paints.
-    - `marketplace-overrides.css`: Declarative anti-flicker stylesheet that collapses supported Envato ad surfaces immediately when `Hide Ads` is enabled.
+    - `marketplace-overrides.css`: Declarative anti-flicker stylesheet that collapses supported Envato ad surfaces immediately when `Hide Ads` is enabled, including shared browse/category sidebars and downloads/account promo rails.
     - `content.js`: Captures Envato metadata on previews, uses Envato `itemId` as the stable product key, fires secure redirects, and injects floating Shadow DOM widgets seamlessly into third-party target showcase websites.
     - `content.css`: Base layout requirements for the floating panel.
     - `sidepanel.html/css/js`: An aesthetic UI implementation loaded inside an isolated inner iframe.
@@ -71,8 +72,10 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 noframevato/
 ├── manifest.json       # Extension configuration
 ├── background.js       # Service worker
+├── envato-shared.js    # Shared helpers for hosts, item IDs, and settings
 ├── marketplace-init.js # Early settings bootstrap for host-page overrides
 ├── marketplace-overrides.css # Early ad-suppression rules for Envato pages
+├── .env.local.example  # Local Playwright auth template for manual DOM debugging
 ├── content.js          # Injection logic
 ├── content.css         # Container styles
 ├── fonts/              # Local bundled fonts for extension UI

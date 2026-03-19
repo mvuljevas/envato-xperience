@@ -8,6 +8,8 @@
 - **Safer rendering**: product data extracted from Envato pages is rendered with DOM APIs and `textContent` instead of `innerHTML`.
 - **Shadow DOM isolation**: injected UI stays isolated from host pages.
 - **Early packaged overrides**: marketplace promo suppression is driven by bundled `document_start` assets (`marketplace-init.js` + `marketplace-overrides.css`) instead of remote resources or late inline style injection.
+- **Scoped promo suppression**: `Hide Ads` is implemented through packaged selectors and a root `data-envato-hide-ads` flag on `<html>`, keeping the behavior deterministic and reviewable without remote policy lists.
+- **Shared packaged helpers**: host detection, item identity parsing, and setting compatibility live in `envato-shared.js` so behavior stays consistent across `document_start`, `document_idle`, and panel contexts.
 - **Scoped storage**: settings remain in `chrome.storage.sync`, preview context stays in `chrome.storage.local`, and cached product images live in `IndexedDB`. There is no remote backend and no analytics pipeline in the codebase.
 - **Stable product mapping**: Envato `itemId` values from item URLs are used as the canonical internal key, which reduces heuristic matching across reviews/comments/support routes.
 - **Contextual fallback UI**: non-item pages render explicit informational states instead of an indefinite product-loading state, which makes panel behavior deterministic and reviewable.
@@ -36,7 +38,7 @@
 2. Test both main modes:
    - Auto Remove on Envato preview pages.
    - Floating Widget on redirected external demo sites.
-   - Hide Ads on Envato browse and item pages, confirming there is no visible placeholder gap or delayed flicker on supported promo blocks.
+   - Hide Ads on Envato browse, `top-sellers`, account/download pages, and item pages, confirming there is no visible placeholder gap or delayed flicker on supported promo blocks.
 3. Verify there are no console errors in:
    - the service worker
    - the Envato preview page
