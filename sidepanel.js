@@ -25,6 +25,16 @@ document.addEventListener('DOMContentLoaded', function () {
     const envatoDomainText = document.getElementById('envatoDomainText');
     const productTitleText = document.getElementById('productTitleText');
     const contentArea = document.querySelector('.content-area');
+    const statusEmptyState = document.getElementById('statusEmptyState');
+    const statusStateEyebrow = document.getElementById('statusStateEyebrow');
+    const statusStateTitle = document.getElementById('statusStateTitle');
+    const statusStateBody = document.getElementById('statusStateBody');
+    const statusStateHelper = document.getElementById('statusStateHelper');
+    const autoRemoveStatus = document.getElementById('autoRemoveStatus');
+    const widgetStatus = document.getElementById('widgetStatus');
+    const itemDetailsContainer = document.getElementById('itemDetailsContainer');
+    const itemDetailsImage = document.getElementById('itemDetailsImage');
+    const itemImageWrapper = document.querySelector('.image-wrapper');
 
     function clearChildren(element) {
         if (element) {
@@ -48,6 +58,59 @@ document.addEventListener('DOMContentLoaded', function () {
         return match ? match[1] : null;
     }
 
+    function getSiteName(url) {
+        if (!url) return 'Envato';
+        if (url.includes('themeforest')) return 'ThemeForest';
+        if (url.includes('codecanyon')) return 'CodeCanyon';
+        if (url.includes('videohive')) return 'VideoHive';
+        if (url.includes('audiojungle')) return 'AudioJungle';
+        if (url.includes('graphicriver')) return 'GraphicRiver';
+        if (url.includes('photodune')) return 'PhotoDune';
+        if (url.includes('3docean')) return '3DOcean';
+        return 'Envato';
+    }
+
+    function setStatusPill(element, label, enabled) {
+        if (!element) return;
+        element.textContent = `${label} ${enabled ? 'On' : 'Off'}`;
+        element.classList.toggle('is-on', enabled);
+        element.classList.toggle('is-off', !enabled);
+    }
+
+    function refreshStatusPills() {
+        const autoRemoveEnabled = autoRemoveCheckbox ? autoRemoveCheckbox.checked : true;
+        const widgetEnabled = widgetModeCheckbox ? widgetModeCheckbox.checked : false;
+
+        setStatusPill(autoRemoveStatus, 'Auto Remove', autoRemoveEnabled);
+        setStatusPill(widgetStatus, 'Floating Widget', widgetEnabled);
+    }
+
+    function resetProductCard() {
+        if (itemDetailsContainer) itemDetailsContainer.classList.add('hidden');
+        if (productTitleText) productTitleText.textContent = '';
+        setImageSource(itemDetailsImage, null);
+    }
+
+    function renderContextState({ eyebrow, title, body, helper, tone = 'neutral' }) {
+        resetProductCard();
+        refreshStatusPills();
+
+        if (statusEmptyState) {
+            statusEmptyState.dataset.tone = tone;
+            statusEmptyState.classList.remove('hidden');
+        }
+        if (statusStateEyebrow) statusStateEyebrow.textContent = eyebrow;
+        if (statusStateTitle) statusStateTitle.textContent = title;
+        if (statusStateBody) statusStateBody.textContent = body;
+        if (statusStateHelper) statusStateHelper.textContent = helper;
+    }
+
+    function hideContextState() {
+        if (statusEmptyState) {
+            statusEmptyState.classList.add('hidden');
+        }
+    }
+
     function setImageSource(imageEl, source) {
         if (!imageEl) return;
 
@@ -55,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
             clearImageObjectUrl();
             imageEl.removeAttribute('src');
             imageEl.style.display = 'none';
+            if (itemImageWrapper) itemImageWrapper.style.display = 'none';
             return;
         }
 
@@ -63,12 +127,14 @@ document.addEventListener('DOMContentLoaded', function () {
             currentImageObjectUrl = URL.createObjectURL(source);
             imageEl.src = currentImageObjectUrl;
             imageEl.style.display = 'block';
+            if (itemImageWrapper) itemImageWrapper.style.display = 'block';
             return;
         }
 
         clearImageObjectUrl();
         imageEl.src = source;
         imageEl.style.display = 'block';
+        if (itemImageWrapper) itemImageWrapper.style.display = 'block';
     }
 
     async function resolveProductImage(itemId, details) {
@@ -336,51 +402,61 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (envatoControls) envatoControls.classList.remove('hidden');
                 if (notEnvatoMessage) notEnvatoMessage.classList.add('hidden');
 
-                let siteName = "Envato";
-                if (activeTab.url.includes('themeforest')) siteName = "ThemeForest";
-                if (activeTab.url.includes('codecanyon')) siteName = "CodeCanyon";
-                if (activeTab.url.includes('videohive')) siteName = "VideoHive";
-                if (activeTab.url.includes('audiojungle')) siteName = "AudioJungle";
-                if (activeTab.url.includes('graphicriver')) siteName = "GraphicRiver";
-                if (activeTab.url.includes('photodune')) siteName = "PhotoDune";
-                if (activeTab.url.includes('3docean')) siteName = "3DOcean";
+                const siteName = getSiteName(activeTab.url);
 
                 if (envatoDomainText) {
                     envatoDomainText.textContent = isEnvatoPreview ? `You are viewing a preview on ${siteName}` : `You are browsing ${siteName}`;
                 }
 
-                const itemDetailsContainer = document.getElementById('itemDetailsContainer');
-                if (itemDetailsContainer) itemDetailsContainer.classList.add('hidden');
-
                 if (isEnvatoPreview) {
                     if (removeNowBtn) removeNowBtn.classList.remove('hidden');
+                    renderContextState({
+                        eyebrow: 'Preview detected',
+                        title: 'Ready to remove preview chrome',
+                        body: 'Jump directly into the live demo or keep purchase context available on the final site.',
+                        helper: widgetModeCheckbox && widgetModeCheckbox.checked
+                            ? 'Floating Widget is enabled and will preserve the product actions after redirect.'
+                            : 'Enable Floating Widget in Settings if you want Details and Buy Now actions preserved after redirect.',
+                        tone: 'preview'
+                    });
                     
                     chrome.tabs.sendMessage(activeTab.id, { action: "get_product_info" }, function(response) {
-                        // Ignore errors if the content script is not injected yet
                         if (chrome.runtime.lastError) {
-                            if (productTitleText) productTitleText.textContent = "Loading...";
                             return;
                         }
+
                         if (response && response.title) {
-                            if (productTitleText) productTitleText.textContent = response.title;
-                        } else {
-                            if (productTitleText) productTitleText.textContent = "Product (Title not found)";
+                            renderContextState({
+                                eyebrow: 'Preview detected',
+                                title: response.title,
+                                body: 'Remove the Envato preview frame to move straight into the live demo experience.',
+                                helper: widgetModeCheckbox && widgetModeCheckbox.checked
+                                    ? 'Floating Widget will keep the Details and Buy Now actions available on the destination site.'
+                                    : 'Auto Remove is ready. Enable Floating Widget if you want purchase actions preserved after redirect.',
+                                tone: 'preview'
+                            });
                         }
                     });
                 } else if (activeTab.url.includes('/item/')) {
-                    // Item Page
                     if (removeNowBtn) removeNowBtn.classList.add('hidden');
                     if (envatoDomainText) envatoDomainText.textContent = `Viewing Product on ${siteName}`;
-                    const loadingText = document.getElementById('loadingText');
-                    if (loadingText) {
-                        loadingText.textContent = "Fetching details...";
-                        loadingText.style.display = 'block';
-                    }
-                    if (itemDetailsContainer) itemDetailsContainer.classList.add('hidden');
+                    renderContextState({
+                        eyebrow: 'Loading product context',
+                        title: 'Fetching live product details',
+                        body: 'Pulling pricing, rating, sales, artwork, and update metadata from the current item page.',
+                        helper: 'This should only take a moment.',
+                        tone: 'loading'
+                    });
                     
                     chrome.tabs.sendMessage(activeTab.id, { action: "get_item_details" }, function(response) {
                         if (chrome.runtime.lastError) {
-                            if (loadingText) loadingText.textContent = "Error fetching details.";
+                            renderContextState({
+                                eyebrow: 'Product context unavailable',
+                                title: 'We could not load this item',
+                                body: 'The page did not expose the expected product metadata to the panel.',
+                                helper: 'Try reloading the tab or opening the main item page again.',
+                                tone: 'neutral'
+                            });
                             return;
                         }
 
@@ -388,7 +464,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const details = response && typeof response === 'object' ? response : null;
 
                             if (details && details.title) {
-                                if (loadingText) loadingText.style.display = 'none';
+                                hideContextState();
                                 if (productTitleText) productTitleText.textContent = details.title;
                                 if (itemDetailsContainer) itemDetailsContainer.classList.remove('hidden');
                                 const itemId = details.itemId || extractItemIdFromUrl(activeTab.url);
@@ -424,24 +500,39 @@ document.addEventListener('DOMContentLoaded', function () {
                                         renderUI(details.imageUrl);
                                     });
                             } else {
-                                if (loadingText) loadingText.textContent = "General browsing (No frames here)";
-                                if (loadingText) loadingText.style.display = 'block';
+                                renderContextState({
+                                    eyebrow: 'Product context available',
+                                    title: 'Some details are limited here',
+                                    body: 'Open the main item page to refresh artwork, pricing, and marketplace metadata for this product.',
+                                    helper: 'Core product context is still preserved while you browse reviews, comments, or support.',
+                                    tone: 'neutral'
+                                });
                             }
                         } catch (error) {
                             console.error('[Envato Xperience] Failed to render item details:', error, response);
-                            if (loadingText) {
-                                loadingText.textContent = "Could not render product details.";
-                                loadingText.style.display = 'block';
-                            }
-                            if (itemDetailsContainer) itemDetailsContainer.classList.add('hidden');
+                            renderContextState({
+                                eyebrow: 'Render fallback',
+                                title: 'Product details could not be rendered',
+                                body: 'The panel could not assemble the premium product card for this page state.',
+                                helper: 'Try refreshing the tab to request the data again.',
+                                tone: 'neutral'
+                            });
                         }
                     });
                 } else {
                     if (removeNowBtn) removeNowBtn.classList.add('hidden');
-                    if (productTitleText) productTitleText.textContent = "General browsing (No frames here)";
+                    renderContextState({
+                        eyebrow: `Browsing ${siteName}`,
+                        title: 'Product insights appear here',
+                        body: 'Open any item page to load pricing, rating, sales, and update details inside this panel.',
+                        helper: 'Envato Xperience is ready when you are.',
+                        tone: 'neutral'
+                    });
                 }
 
             } else {
+                resetProductCard();
+                hideContextState();
                 if (envatoControls) envatoControls.classList.add('hidden');
                 if (notEnvatoMessage) notEnvatoMessage.classList.remove('hidden');
             }
@@ -452,6 +543,8 @@ document.addEventListener('DOMContentLoaded', function () {
         chrome.storage.sync.get(['autoRemove', 'widgetMode'], function (result) {
             if (autoRemoveCheckbox) autoRemoveCheckbox.checked = (result.autoRemove !== false);
             if (widgetModeCheckbox) widgetModeCheckbox.checked = (result.widgetMode === true); // defaults to false
+            refreshStatusPills();
+            checkDomain();
         });
     }
 
@@ -461,6 +554,8 @@ document.addEventListener('DOMContentLoaded', function () {
             autoRemove: autoRemoveCheckbox.checked,
             widgetMode: widgetModeCheckbox.checked 
         });
+        refreshStatusPills();
+        checkDomain();
     }
 
     /**
@@ -491,7 +586,6 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('beforeunload', clearImageObjectUrl);
 
     // Initialize
-    checkDomain();
     loadSettings();
 
     // Listener for tab changes to update UI domain detection

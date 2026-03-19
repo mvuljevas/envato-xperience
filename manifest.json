@@ -42,6 +42,7 @@
         "sidepanel.js",
         "image-cache.js",
         "content.css",
+        "fonts/*",
         "images/*",
         "images/not_envato.png"
       ],

@@ -30,16 +30,26 @@
               Envato Preview detected!
             </p>
             
-            <div class="card" style="padding: 16px;">
+            <div class="card context-card" style="padding: 16px;">
               <!-- Image Banner (Edge to Top-Edge) -->
               <div class="image-wrapper" style="margin: -16px -16px 16px -16px; border-bottom: 1px solid #f1f3f5; background: #f8f9fa;">
                   <img id="itemDetailsImage" src="" style="width: 100%; display: none; vertical-align: middle; object-fit: cover;" />
               </div>
 
-              <!-- Initial Loading Text (Visible before fetch completes) -->
-              <p class="status-text" id="loadingText" style="color: #6fab35; font-size: 14px; font-weight: 500; margin-bottom: 16px; line-height: 1.4; text-align: center;">
-                Loading product info...
-              </p>
+              <div id="statusEmptyState" class="status-state">
+                <p id="statusStateEyebrow" class="state-eyebrow">Marketplace Context</p>
+                <h2 id="statusStateTitle" class="state-title">Product insights appear here</h2>
+                <p id="statusStateBody" class="state-body">
+                  Open any item page to load pricing, rating, sales, and update details.
+                </p>
+                <p id="statusStateHelper" class="state-helper">
+                  Envato Xperience is ready when you are.
+                </p>
+                <div class="state-pills">
+                  <span id="autoRemoveStatus" class="state-pill">Auto Remove On</span>
+                  <span id="widgetStatus" class="state-pill">Floating Widget Off</span>
+                </div>
+              </div>
               
               <!-- Item Details Container -->
               <div id="itemDetailsContainer" class="hidden">
@@ -47,7 +57,7 @@
                  <!-- Header Row (Title & Price) -->
                  <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px;">
                      <!-- Product Title -->
-                     <p class="status-text" id="productTitleText" style="color: #262626; font-family: 'Arial Narrow', 'Helvetica Neue', sans-serif; font-size: 18px; font-weight: 300; margin: 0; line-height: 1.25; text-align: left; flex: 1;">
+                     <p class="status-text" id="productTitleText" style="color: #262626; font-family: 'Oswald', 'Arial Narrow', 'Helvetica Neue', sans-serif; font-size: 18px; font-weight: 300; margin: 0; line-height: 1.25; text-align: left; flex: 1;">
                      </p>
                      
                      <!-- Price -->
@@ -82,10 +92,10 @@
             class="not-envato-container hidden"
           >
             <img src="images/not_envato.png" alt="Not an Envato Preview Page" />
-            <h2>Not an Envato Preview Page</h2>
+            <h2>Outside Envato</h2>
             <p>
-              This extension only works on ThemeForest and CodeCanyon preview
-              pages.
+              Open a ThemeForest or CodeCanyon item preview to activate frame
+              removal and product context tools.
             </p>
           </div>
         </div>
