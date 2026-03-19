@@ -14,6 +14,7 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 - **Context Preservation (Floating Widget)**: Optionally injects an elegant floating button panel on the creator's real external website, retaining Envato's "Buy Now" and "Details" links even after the redirect.
 - **Stable Product Identity**: Uses the canonical Envato `itemId` from `/item/.../<id>` URLs so product data stays aligned across item, reviews, comments, and support tabs.
 - **Local Image Cache**: Stores product hero images in `IndexedDB` with TTL and eviction rules instead of bloating extension storage.
+- **Contextual Status States**: Outside item pages, the panel switches to premium editorial states for browse, preview, and fallback contexts instead of showing a dead loading message.
 - **Smart Detection**: Specifically extracts product metadata from Envato domains and targets the `.full-screen-preview__frame` container safely.
 - **Shadow DOM Isolation**: The UI and floating widgets are strictly encapsulated in Shadow DOM to avoid CSS bleeding onto any theme's complex stylesheets.
 
@@ -50,6 +51,7 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 ## Compliance
 
 - The extension is packaged as a self-contained Manifest V3 project with no remote JavaScript.
+- The panel typography is bundled locally, including `Oswald`, with no remote font dependency.
 - Product metadata is rendered using safe DOM APIs rather than `innerHTML`.
 - Cached product images are stored in `IndexedDB`, not `chrome.storage.local`.
 - Compliance notes and pre-publish review guidance live in `docs/COMPLIANCE.md`.
@@ -65,6 +67,7 @@ noframevato/
 ├── background.js       # Service worker
 ├── content.js          # Injection logic
 ├── content.css         # Container styles
+├── fonts/              # Local bundled fonts for extension UI
 ├── image-cache.js      # IndexedDB-backed image cache
 ├── sidepanel.html      # Panel Structure
 ├── sidepanel.css       # Panel Styles

@@ -13,6 +13,7 @@ La herramienta está estructurada pura y netamente para Manifest V3. El flujo de
    - Usa el `itemId` numérico de Envato como clave estable al reconciliar metadata entre `/item`, `/reviews`, `/comments` y `/support`.
    - Analiza el historial local en su próxima ejecución limpia dentro del sitio destino y si encuentra metadata fresca (menos de 2 horas), renderiza estéticamente el **Floating Widget**.
 - `sidepanel.html / css / js`: Se encarga exclusivamente de la UI del panel, los toggles de configuración y de pedir a `content.js` que le informe sobre el estatus del entorno.
+- `fonts/`: Tipografías locales empaquetadas para la UI del panel, evitando dependencias remotas.
 - `image-cache.js`: Gestiona el caché local de imágenes en `IndexedDB` para evitar inflar `chrome.storage.local`.
 
 ## 2. Pruebas y Desarrollo Local
@@ -24,10 +25,11 @@ Dado el entorno de las Extensiones de Chrome, no hay un `npm run dev` nativo o l
 3. Activa el **Modo Desarrollador**.
 4. Dale a **Cargar extensión sin empaquetar (Load unpacked)** y apunta a `noframevato`.
 5. **Si modificaste `content.js`, `manifest.json` o `background.js`**: Debes presionar obligatoriamente el ícono de Rellenar / Recargar (la flecha circular en tu tarjetón de extensión en Chrome) y **después refrescar obligatoriamente la pestaña** web (ThemeForest) donde estabas inyectando la prueba.
-6. **Si modificaste `sidepanel.html / css / js` o `image-cache.js`**: Las modificaciones en el panel visual suelen reflejarse cerrando y volviendo a abrir el panel flotante, pero si no se da el caso, aplica el paso 5 de todas maneras.
+6. **Si modificaste `sidepanel.html / css / js`, `fonts/` o `image-cache.js`**: Las modificaciones en el panel visual suelen reflejarse cerrando y volviendo a abrir el panel flotante, pero si no se da el caso, aplica el paso 5 de todas maneras.
 7. Valida siempre al menos dos superficies:
    - una página preview de Envato
    - una sub-vista de producto (`reviews`, `comments` o `support`) para confirmar continuidad de metadata e imagen
+   - una página de browse/categoría para confirmar que el panel muestre un estado contextual y no un loading muerto
 
 ## 3. Directriz de Integración
 Cualquier nueva función o corrección de bugs debe revisarse validando que ambas interacciones principales funcionen:

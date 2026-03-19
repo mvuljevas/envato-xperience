@@ -21,3 +21,4 @@ Al modificar la extensión Envato Xperience y continuar con su desarrollo, los a
    - Utilizar fondos difuminados: `backdrop-filter: blur(12px)`.
    - Implementar bordes sutiles y redondeados (mínimo `border-radius: 8px`).
    - Las interacciones (como `hover`) deben sentirse orgánicas; añade siempre `transition: all 0.2s` mínimo.
+   - Priorizar `Oswald` como tipografía de display en headings, tabs, labels y estados del panel. Si se necesita consistencia total, empaquetar la fuente localmente en la extensión; no depender de fuentes remotas.
