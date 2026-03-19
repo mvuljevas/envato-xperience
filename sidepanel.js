@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Settings Tab Elements
     const autoRemoveCheckbox = document.getElementById('autoRemove');
     const widgetModeCheckbox = document.getElementById('widgetMode');
+    const hideAdsCheckbox = document.getElementById('hideAds');
 
     // UI Feedback Elements
     const envatoDomainText = document.getElementById('envatoDomainText');
@@ -540,19 +541,22 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function loadSettings() {
-        chrome.storage.sync.get(['autoRemove', 'widgetMode'], function (result) {
+        chrome.storage.sync.get(['autoRemove', 'widgetMode', 'hideAds', 'hidePromoBar'], function (result) {
             if (autoRemoveCheckbox) autoRemoveCheckbox.checked = (result.autoRemove !== false);
             if (widgetModeCheckbox) widgetModeCheckbox.checked = (result.widgetMode === true); // defaults to false
+            if (hideAdsCheckbox) hideAdsCheckbox.checked = (result.hideAds === true || result.hidePromoBar === true); // defaults to false
             refreshStatusPills();
             checkDomain();
         });
     }
 
     function saveSettings() {
-        if (!autoRemoveCheckbox || !widgetModeCheckbox) return;
+        if (!autoRemoveCheckbox || !widgetModeCheckbox || !hideAdsCheckbox) return;
         chrome.storage.sync.set({ 
             autoRemove: autoRemoveCheckbox.checked,
-            widgetMode: widgetModeCheckbox.checked 
+            widgetMode: widgetModeCheckbox.checked,
+            hideAds: hideAdsCheckbox.checked,
+            hidePromoBar: false
         });
         refreshStatusPills();
         checkDomain();
@@ -581,6 +585,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Event Listeners
     if (autoRemoveCheckbox) autoRemoveCheckbox.addEventListener('change', saveSettings);
     if (widgetModeCheckbox) widgetModeCheckbox.addEventListener('change', saveSettings);
+    if (hideAdsCheckbox) hideAdsCheckbox.addEventListener('change', saveSettings);
     if (removeNowBtn) removeNowBtn.addEventListener('click', triggerManualRemoval);
     if (closeBtn) closeBtn.addEventListener('click', triggerClose);
     window.addEventListener('beforeunload', clearImageObjectUrl);

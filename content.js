@@ -7,6 +7,7 @@
 let panelContainer = null;
 let panelWrapperRef = null;
 let panelVisible = false;
+let promoSuppressionStyle = null;
 
 /**
  * Creates and injects the floating panel iframe using Shadow DOM
@@ -106,6 +107,66 @@ function extractItemIdFromUrl(url = window.location.href) {
   if (!url || typeof url !== "string") return "";
   const match = url.match(/\/item\/[^/]+\/(?:(?:reviews|comments|support)\/)?(\d+)(?:[/?#]|$)/i);
   return match ? match[1] : "";
+}
+
+function isEnvatoMarketplaceSite(url = window.location.hostname) {
+  const marketplaceHosts = [
+    "themeforest.net",
+    "codecanyon.net",
+    "videohive.net",
+    "audiojungle.net",
+    "graphicriver.net",
+    "photodune.net",
+    "3docean.net",
+    "envato.com",
+    "envatomarket.com",
+  ];
+
+  return marketplaceHosts.some((domain) => url.includes(domain));
+}
+
+function setPromoSuppression(enabled) {
+  const shouldSuppress = enabled === true && isEnvatoMarketplaceSite();
+
+  if (!shouldSuppress) {
+    if (promoSuppressionStyle) {
+      promoSuppressionStyle.remove();
+      promoSuppressionStyle = null;
+    }
+    return;
+  }
+
+  if (!promoSuppressionStyle) {
+    promoSuppressionStyle = document.createElement("style");
+    promoSuppressionStyle.id = "envato-xperience-promo-suppression";
+    promoSuppressionStyle.textContent = `
+      #market-banner,
+      .shared-banner_component__bannerTop,
+      .headerstrip-wrapper,
+      .headerstrip,
+      .home-elements_items_block_component__root,
+      .shared-global_footer-cross_sell_component__root,
+      .shared-global_footer-cross_sell_banner_component__root {
+        display: none !important;
+        height: 0 !important;
+        min-height: 0 !important;
+        max-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+
+      .shared-global_header-global_header_component__bannerPlaceholder {
+        padding-top: 0 !important;
+      }
+    `;
+    document.documentElement.appendChild(promoSuppressionStyle);
+    return;
+  }
+
+  if (!promoSuppressionStyle.isConnected) {
+    document.documentElement.appendChild(promoSuppressionStyle);
+  }
 }
 
 /**
@@ -452,9 +513,12 @@ function injectWidget(info) {
 function initialize() {
   if (window !== window.top) return; // Prevent execution inside iframes
   
-  chrome.storage.sync.get(["autoRemove", "widgetMode"], function (result) {
+  chrome.storage.sync.get(["autoRemove", "widgetMode", "hideAds", "hidePromoBar"], function (result) {
     const autoRemoveEnabled = result.autoRemove !== false; // Default to true if undefined
     const widgetModeEnabled = result.widgetMode === true; // Default to false
+    const hideAdsEnabled = result.hideAds === true || result.hidePromoBar === true; // Default to false; keep backward compatibility
+
+    setPromoSuppression(hideAdsEnabled);
 
     // Only trigger auto-remove on actual preview pages
     const previewDomains = ['preview.themeforest.net', 'preview.codecanyon.net', 'preview.videohive.net', 'preview.audiojungle.net', 'preview.graphicriver.net', 'preview.photodune.net', 'preview.3docean.net'];
@@ -498,6 +562,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       break;
   }
   return true; // Keep message channel open for async response
+});
+
+chrome.storage.onChanged.addListener(function (changes, areaName) {
+  if (window !== window.top || areaName !== "sync") return;
+
+  if (changes.hideAds || changes.hidePromoBar) {
+    const nextValue = changes.hideAds
+      ? changes.hideAds.newValue === true
+      : changes.hidePromoBar.newValue === true;
+    setPromoSuppression(nextValue);
+  }
 });
 
 initialize();
