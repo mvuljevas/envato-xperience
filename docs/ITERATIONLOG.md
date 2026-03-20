@@ -13,6 +13,29 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 
 ## Entries
 
+### 2026-03-20 - Hide Deprecated Items (Precisión UI e Integración IndexedDB, Animaciones)
+- Objetivo: solucionar tooltip imagen fallida asociando con ItemID, uso de IndexedDB, cambio dinámico de icono, arreglar cutoff en márgenes, y animar el expand/collapse sin clipping.
+- Archivos: `manifest.json`, `content.js`, `marketplace-overrides.css`.
+- Cambios: En `content.js`, simplificamos radicalmente la extracción de la imagen apuntando al layout exacto y consistente `.download__thumbnail .item-thumbnail__image a img` como primera opción (y caemos en `data-item-id` / JSON si eso falla). Dejamos de usar `cloneNode` para la imagen extraída y pasamos a crear un `<img>` puro inyectando explícitamente el `src` (esto evita heredar clases de 'lazy loading' nativas de Envato que rompían el render del popover en ocasiones). Se inyectó el script principal `image-cache.js` a `content_scripts` en el manifest para servir la imagen en el tooltip utilizando IndexedDB caché. Cambiada heurística visual de _Toggle_, el botón `expand/collapse` ahora cicla `SVG` (expand diagonal/minimize-2 feather icon). En `marketplace-overrides.css` y `content.js` se migró la arquitectura de contenido original a un wrapper `.ex-original-content` con un suave fondo `#f7f9fa` para evitar confusión entre ítems en la lista principal, liberando además al popover de ser clippeado, y mejorando las animaciones fluidas de despliegue.
+
+### 2026-03-20 - Hide Deprecated Items (UX Interactiva)
+- Objetivo: refinar la barra de elementos removidos a la estética premium (Live Preview).
+- Archivos: `content.js`, `marketplace-overrides.css`.
+- Cambios: Fondo `#EDEDED` de barra principal; iconos idénticos a Live Preview con border-radius 4px; border-bottom habilitado en modo colapso; reemplazo de icono destacado por icono cuadrado en tooltip; botones completamente estructurados.
+- Validación: `npm run smoke:extension`.
+
+### 2026-03-20 - Hide Deprecated Items (Bugfix & CSS puro)
+- Objetivo: agregar toggle "Hide Deprecated Items" en "Enhance UI".
+- Problema solucionado: corrección de un bug en el event listener de `sidepanel.js` que no almacenaba el estado.
+- Archivos: `envato-shared.js`, `sidepanel.html`, `sidepanel.js`, `marketplace-init.js`, `marketplace-overrides.css`.
+
+### 2026-03-20 - Enhance UI en Settings
+- Objetivo: agregar una sección específica 'Enhance UI' en la pestaña de Settings para aislar 'Hide Ads' de los controles generales.
+- Archivos: `sidepanel.html`.
+- Validación: ejecución exitosa del ambiente `npm run smoke:extension`.
+- Riesgos pendientes: confirmar visualmente el espaciado de la nueva sección en la tarjeta del panel lateral.
+- Próximo paso lógico: consultar al usuario si desea añadir nuevas opciones específicas en esta nueva sección.
+
 ### 2026-03-19 - Sidepanel compacto y Hide Ads temprano
 - Objetivo: acercar la tarjeta del sidepanel al patrón compacto de Envato y reducir flicker al ocultar promos con `document_start`.
 - Archivos: `content.js`, `content.css`, `manifest.json`, `marketplace-init.js`, `marketplace-overrides.css`, `sidepanel.html`, `sidepanel.css`, `sidepanel.js`.
