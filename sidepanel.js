@@ -9,7 +9,9 @@ document.addEventListener('DOMContentLoaded', function () {
     const storageKeys = shared ? shared.STORAGE_KEYS : {
         hideAds: 'hideAds',
         legacyHideAds: 'hidePromoBar',
-        hideAdsMirror: 'envatoXperienceHideAds'
+        hideAdsMirror: 'envatoXperienceHideAds',
+        hideDeprecated: 'hideDeprecated',
+        hideDeprecatedMirror: 'envatoXperienceHideDeprecated'
     };
     let currentImageObjectUrl = null;
 
@@ -27,6 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const autoRemoveCheckbox = document.getElementById('autoRemove');
     const widgetModeCheckbox = document.getElementById('widgetMode');
     const hideAdsCheckbox = document.getElementById('hideAds');
+    const hideDeprecatedCheckbox = document.getElementById('hideDeprecated');
 
     // UI Feedback Elements
     const envatoDomainPrefix = document.getElementById('envatoDomainPrefix');
@@ -594,10 +597,13 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function loadSettings() {
-        chrome.storage.sync.get(['autoRemove', 'widgetMode', storageKeys.hideAds, storageKeys.legacyHideAds], function (result) {
+        chrome.storage.sync.get(['autoRemove', 'widgetMode', storageKeys.hideAds, storageKeys.legacyHideAds, storageKeys.hideDeprecated], function (result) {
             const hideAdsEnabled = shared
                 ? shared.readHideAdsPreference(result)
                 : (result[storageKeys.hideAds] === true || result[storageKeys.legacyHideAds] === true);
+            const hideDepEnabled = shared
+                ? shared.readHideDeprecatedPreference(result)
+                : result[storageKeys.hideDeprecated] === true;
 
             if (shared && shared.hasLegacyHideAdsPreference(result)) {
                 const patch = {};
@@ -614,20 +620,23 @@ document.addEventListener('DOMContentLoaded', function () {
             if (autoRemoveCheckbox) autoRemoveCheckbox.checked = (result.autoRemove !== false);
             if (widgetModeCheckbox) widgetModeCheckbox.checked = (result.widgetMode === true); // defaults to false
             if (hideAdsCheckbox) hideAdsCheckbox.checked = hideAdsEnabled;
+            if (hideDeprecatedCheckbox) hideDeprecatedCheckbox.checked = hideDepEnabled;
             refreshStatusPills();
             checkDomain();
         });
     }
 
     function saveSettings() {
-        if (!autoRemoveCheckbox || !widgetModeCheckbox || !hideAdsCheckbox) return;
+        if (!autoRemoveCheckbox || !widgetModeCheckbox || !hideAdsCheckbox || !hideDeprecatedCheckbox) return;
         chrome.storage.sync.set({ 
             autoRemove: autoRemoveCheckbox.checked,
             widgetMode: widgetModeCheckbox.checked,
-            [storageKeys.hideAds]: hideAdsCheckbox.checked
+            [storageKeys.hideAds]: hideAdsCheckbox.checked,
+            [storageKeys.hideDeprecated]: hideDeprecatedCheckbox.checked
         });
         chrome.storage.local.set({
-            [storageKeys.hideAdsMirror]: hideAdsCheckbox.checked
+            [storageKeys.hideAdsMirror]: hideAdsCheckbox.checked,
+            [storageKeys.hideDeprecatedMirror]: hideDeprecatedCheckbox.checked
         });
         refreshStatusPills();
         checkDomain();
@@ -657,6 +666,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (autoRemoveCheckbox) autoRemoveCheckbox.addEventListener('change', saveSettings);
     if (widgetModeCheckbox) widgetModeCheckbox.addEventListener('change', saveSettings);
     if (hideAdsCheckbox) hideAdsCheckbox.addEventListener('change', saveSettings);
+    if (hideDeprecatedCheckbox) hideDeprecatedCheckbox.addEventListener('change', saveSettings);
     if (removeNowBtn) removeNowBtn.addEventListener('click', triggerManualRemoval);
     if (closeBtn) closeBtn.addEventListener('click', triggerClose);
     window.addEventListener('beforeunload', clearImageObjectUrl);

@@ -602,7 +602,7 @@ function injectDeprecatedBars() {
     let licenseUrl = null;
     const allLinks = Array.from(li.querySelectorAll('a'));
     for (const a of allLinks) {
-        if (a.href && a.href.includes('license_certificate')) {
+        if (a.href && a.textContent && a.textContent.toLowerCase().includes('license certificate')) {
             licenseUrl = a.href;
             break;
         }
@@ -666,6 +666,49 @@ function injectDeprecatedBars() {
       placeholder.style.display = 'none';
       imgWrapper.insertBefore(exactImg, placeholder);
     }
+
+    const tooltipWrapper = bar.querySelector('.ex-tooltip-wrapper');
+    tooltipWrapper.addEventListener('mouseenter', () => {
+        if (bar.querySelector('.ex-tooltip-img-wrapper img')) return;
+
+        let lazySrc = null;
+        const freshImages = Array.from(li.querySelectorAll('img'));
+        for (const img of freshImages) {
+            let candidate = img.getAttribute('data-src') || img.getAttribute('src') || img.src;
+            if (candidate && !candidate.startsWith('data:image') && !candidate.includes('placeholder')) {
+                lazySrc = candidate;
+                break; 
+            }
+        }
+        
+        if (!lazySrc) {
+            const previewEl = li.querySelector('[data-preview-url]');
+            if (previewEl) lazySrc = previewEl.getAttribute('data-preview-url');
+        }
+
+        if (lazySrc) {
+            const placeholder = bar.querySelector('.ex-placeholder');
+            const imgWrapper = bar.querySelector('.ex-tooltip-img-wrapper');
+            
+            const img = document.createElement('img');
+            img.src = lazySrc;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.display = 'block';
+            
+            img.addEventListener('error', () => {
+              img.style.display = 'none';
+              placeholder.style.display = 'flex';
+            });
+            placeholder.style.display = 'none';
+            imgWrapper.insertBefore(img, placeholder);
+
+            if (itemId && window.EnvatoImageCache) {
+                 window.EnvatoImageCache.cacheImage(itemId, lazySrc).catch(() => {});
+            }
+        }
+    });
 
     const expandBtn = bar.querySelector('.ex-btn-expand');
     expandBtn.addEventListener('click', () => {

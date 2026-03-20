@@ -39,6 +39,7 @@
   - Ajustes de layout y espaciado en Settings para mantener consistencia entre toggles.
 
 ## Fase 6: Próximos Pasos (Futuro)
+- **Base de Datos Global de Items (Backend API)**: Migrar el tracking de items deprecados/eliminados desde el chequeo local del DOM a un backend centralizado para compartir el estado de los "Items Eliminados" instantáneamente con todos los usuarios antes de que intenten cargarlos o acceder a ellos.
 - Integrar sección de "Related Products" (Productos Relacionados) dentro del panel lateral en las vistas de producto.
 - Permitir al usuario arrastrar el widget flotante a distintas esquinas de la pantalla.
 - Refinamientos en la carga asíncrona de datos en previews especialmente lentas.

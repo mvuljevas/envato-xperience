@@ -3,8 +3,10 @@
     autoRemove: "autoRemove",
     widgetMode: "widgetMode",
     hideAds: "hideAds",
+    hideDeprecated: "hideDeprecated",
     legacyHideAds: "hidePromoBar",
     hideAdsMirror: "envatoXperienceHideAds",
+    hideDeprecatedMirror: "envatoXperienceHideDeprecated",
   });
 
   const MARKETPLACE_HOSTS = Object.freeze([
@@ -66,6 +68,10 @@
     return settings[STORAGE_KEYS.hideAds] === true || settings[STORAGE_KEYS.legacyHideAds] === true;
   }
 
+  function readHideDeprecatedPreference(settings = {}) {
+    return settings[STORAGE_KEYS.hideDeprecated] === true;
+  }
+
   function hasLegacyHideAdsPreference(settings = {}) {
     return typeof settings[STORAGE_KEYS.legacyHideAds] === "boolean";
   }
@@ -79,6 +85,7 @@
     isEnvatoMarketplaceSite,
     isEnvatoPreviewSite,
     readHideAdsPreference,
+    readHideDeprecatedPreference,
     hasLegacyHideAdsPreference,
   });
 })(window);

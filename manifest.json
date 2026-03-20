@@ -34,7 +34,7 @@
     },
     {
       "matches": ["<all_urls>"],
-      "js": ["envato-shared.js", "content.js"],
+      "js": ["envato-shared.js", "image-cache.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
