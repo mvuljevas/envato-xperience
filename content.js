@@ -623,15 +623,9 @@ function injectDeprecatedBars() {
     `;
 
     // Safely embed extracted image without blind cloning to bypass lazy loading quirks
-    if (originalImg) {
-      let srcToUse = originalImg.getAttribute('data-src') || originalImg.src;
-      
-      // If native src is just a lazy-loading blank pixel, resort to the preview URL string
-      if (srcToUse && srcToUse.startsWith('data:image')) {
-          srcToUse = originalImg.getAttribute('data-preview-url') || srcToUse;
-      }
-
+    if (finalSrcToUse) {
       // Cache this image in IndexedDB for future visits
+      const srcToUse = finalSrcToUse;
       if (itemId && srcToUse && window.EnvatoImageCache) {
           window.EnvatoImageCache.cacheImage(itemId, srcToUse).catch(err => console.error("Cache Error:", err));
       }
