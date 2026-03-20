@@ -12,6 +12,10 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Próximo paso lógico:
 
 ## Entries
+### 2026-03-20 - Emergency Hotfix: Variable JS Crash y UI Copy
+- Objetivo: solucionar una excepción silenciada en runtime por una variable no definida en `content.js` que abortaba la hidratación del `MutationObserver`, y actualizar copy de opciones.
+- Archivos: `content.js`, `sidepanel.html`.
+- Cambios: En `content.js` se reparó y consolidó formalmente el bloque iterativo de `querySelectorAll` definiendo correctamente la variable `finalSrcToUse`, ya que el parche rápido anterior omitió el bloque declarativo y provocaba un `ReferenceError`, deteniendo en seco el script antes de que llegara a crear `.envato-xperience-removed-bar` y `.ex-original-content`. Por ello es que los ítems quedaban expuestos a las reglas CSS sin una correcta jerarquía de contención, desapareciendo el `padding` y viéndose "rotos". Ahora el script procesa fluidamente cada bloque y crea la barra. En `sidepanel.html` hemos modificado la etiqueta literal de "Hide Deprecated Items" a "Hide Removed Items" para un sentido semántico más exacto.
 
 ### 2026-03-20 - Hide Deprecated Items (Precisión UI e Integración IndexedDB, Animaciones)
 - Objetivo: solucionar tooltip imagen fallida asociando con ItemID, uso de IndexedDB, cambio dinámico de icono, arreglar cutoff en márgenes, y animar el expand/collapse sin clipping.

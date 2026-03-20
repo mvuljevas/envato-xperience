@@ -551,23 +551,28 @@ function injectDeprecatedBars() {
     li.dataset.exProcessed = 'true';
 
     const itemId = li.id.replace('item-', '');
-    let imgSrcToUse = null;
-
-    // Approach 1: Extremely simple native DOM query based on consistent Envato item layout
-    let originalImg = li.querySelector('.download__thumbnail .item-thumbnail__image a img') || 
-                      li.querySelector('.download__thumbnail img') ||
-                      li.querySelector('.item-thumbnail__image img') ||
-                      li.querySelector('.item-thumbnail img') ||
-                      li.querySelector('img'); // Ultimate fallback: grab the first image inside the item row
+    // EXTRACT IMAGE VIA ITERATIVE PROBING
+    let finalSrcToUse = null;
+    const allImages = Array.from(li.querySelectorAll('img'));
+    for (const img of allImages) {
+        let candidate = img.getAttribute('data-src') || img.getAttribute('src') || img.src;
+        if (candidate && !candidate.startsWith('data:image') && !candidate.includes('placeholder')) {
+            finalSrcToUse = candidate;
+            break; 
+        }
+    }
     
-    // Fallback: If image still missing, attempt to find a globally unique target matching the ID
-    if (!originalImg) {
-        originalImg = document.querySelector(`img[data-item-id="${itemId}"]`) || 
-                      (document.querySelector(`a[data-analytics-click-payload*='\\"item_id\\":\\"${itemId}\\"']`) || {}).querySelector?.('img');
+    if (!finalSrcToUse) {
+        const previewEl = li.querySelector('[data-preview-url]');
+        if (previewEl) finalSrcToUse = previewEl.getAttribute('data-preview-url');
+    }
+    
+    if (!finalSrcToUse && itemId) {
+        const globalImg = document.querySelector(`img[data-item-id="${itemId}"]`);
+        if (globalImg) finalSrcToUse = globalImg.getAttribute('data-src') || globalImg.getAttribute('src') || globalImg.src;
     }
 
-    // Approach 2: Check IndexedDB if it was cached previously
-    if (!originalImg && itemId && window.EnvatoImageCache) {
+    if (!finalSrcToUse && itemId && window.EnvatoImageCache) {
       window.EnvatoImageCache.getImage(itemId).then(cached => {
          if (cached && cached.blob) {
             const url = URL.createObjectURL(cached.blob);
