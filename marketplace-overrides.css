@@ -219,14 +219,14 @@ html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable)
 
 .ex-text-tooltip {
     position: absolute;
-    bottom: calc(100% + 8px);
+    bottom: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%) translateY(4px);
-    background-color: #313539;
-    color: #ffffff;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 12px;
+    background-color: #ffffff;
+    color: #222222;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
     font-weight: 500;
     white-space: nowrap;
     opacity: 0;
@@ -234,19 +234,21 @@ html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable)
     transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
     pointer-events: none;
     z-index: 105;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+    border: 1px solid #d1d8df;
 }
 
 .ex-text-tooltip::after {
     content: '';
     position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 4px;
-    border-style: solid;
-    border-color: #313539 transparent transparent transparent;
+    bottom: -6px;
+    left: calc(50% - 5px);
+    width: 10px;
+    height: 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #d1d8df;
+    border-right: 1px solid #d1d8df;
+    transform: rotate(45deg);
 }
 
 .ex-action-wrapper:hover > .ex-text-tooltip {
