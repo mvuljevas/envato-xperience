@@ -12,6 +12,17 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Próximo paso lógico:
 
 ## Entries
+
+### 2026-03-20 - Removed Items (Hover JIT Image extraction & Text fallback)
+- Objetivo: solucionar que algunos ítems se quedaban en el Placeholder por el "lazy loading" asíncrono de Envato Market, y resolver el fallo en la detección del botón de descarga de la licencia.
+- Archivos: `content.js`.
+- Cambios: En `content.js` cambiamos definitivamente la técnica de búsqueda de licencias de una heurística `a.href.includes(...)` a una de interfaz humana directa interrogando `a.textContent`, logrando encontrar siempre el escurridizo botón sin importar el routing del backend de Envato. Respecto a la Preview estancada (scrapping agresivo), hemos incorporado un detector Just-In-Time acoplado al `mouseenter` del botón de Info (`.ex-btn-info`), cuya misión es re-interrogar al DOM entero si al momento de hacer el *hover* la imagen original seguía siendo el SVG 'placeholder'. Si Envato hidrató la imagen asíncronamente después del parseo inicial, el script la inyectará y la persistirá localmente en caché.
+
+### 2026-03-20 - Removed Items UI (Download Button)
+- Objetivo: incluir un botón adicional para descargar la licencia del ítem removido directamente desde la barra inyectada, con estados habilitado/deshabilitado y tooltips informativos.
+- Archivos: `content.js`, `marketplace-overrides.css`.
+- Cambios: En `content.js` se agregó un bucle sobre todas las anclas (`<a>`) originales de la fila para extraer el hipervínculo que contenga `license_certificate`. Si existe, se inyecta un nuevo botón `<a class="ex-btn-download">` con ícono de descarga y tooltip `"Download Licence TXT"`. Si el autor eliminó los respaldos, se inyecta estructuralmente deshabilitado (`button disabled`) con clase `.ex-disabled` indicando `"Download Not Available"`.
+
 ### 2026-03-20 - Emergency Hotfix: Variable JS Crash y UI Copy
 - Objetivo: solucionar una excepción silenciada en runtime por una variable no definida en `content.js` que abortaba la hidratación del `MutationObserver`, y actualizar copy de opciones.
 - Archivos: `content.js`, `sidepanel.html`.

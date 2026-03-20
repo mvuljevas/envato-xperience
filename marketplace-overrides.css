@@ -161,6 +161,7 @@ html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable)
     box-sizing: border-box !important;
     box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
     outline: none !important;
+    text-decoration: none !important;
 }
 
 .ex-btn:hover {
@@ -187,6 +188,21 @@ html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable)
     background-color: #ffe3e3 !important;
     border-color: #ffa8a8 !important;
     color: #e03131 !important;
+}
+
+.ex-btn.ex-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    background-color: transparent !important;
+    border-color: #d0d0d0 !important;
+    color: #b0b8c0 !important;
+    box-shadow: none !important;
+}
+
+.ex-btn.ex-disabled:hover {
+    background-color: transparent !important;
+    border-color: #d0d0d0 !important;
+    color: #b0b8c0 !important;
 }
 
 /* Tooltip Styling */

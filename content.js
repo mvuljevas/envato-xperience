@@ -599,6 +599,15 @@ function injectDeprecatedBars() {
     const titleEl = li.querySelector('h3 a') || li.querySelector('h3') || li.querySelector('.t-heading') || li.querySelector('[class*="title"]');
     const itemTitle = titleEl ? titleEl.textContent.trim() : 'Unknown Item';
 
+    let licenseUrl = null;
+    const allLinks = Array.from(li.querySelectorAll('a'));
+    for (const a of allLinks) {
+        if (a.href && a.href.includes('license_certificate')) {
+            licenseUrl = a.href;
+            break;
+        }
+    }
+
     const bar = document.createElement('div');
     bar.className = 'envato-xperience-removed-bar';
     
@@ -607,6 +616,7 @@ function injectDeprecatedBars() {
     const collapseSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`;
     const trashSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
     const placeholderSvg = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b0b8c0" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+    const downloadSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
 
     bar.innerHTML = `
       <div class="ex-removed-line"></div>
@@ -622,6 +632,9 @@ function injectDeprecatedBars() {
                <div class="ex-tooltip-title">${itemTitle}</div>
             </div>
          </div>
+         ${licenseUrl 
+            ? `<a href="${licenseUrl}" target="_blank" class="ex-btn ex-btn-download" title="Download Licence TXT">${downloadSvg}</a>` 
+            : `<button class="ex-btn ex-btn-download ex-disabled" title="Download Not Available" disabled>${downloadSvg}</button>`}
          <button class="ex-btn ex-btn-expand" title="Toggle original item">${expandSvg}</button>
          <button class="ex-btn ex-btn-delete" title="Remove from list">${trashSvg}</button>
       </div>
