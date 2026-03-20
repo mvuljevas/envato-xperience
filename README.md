@@ -1,15 +1,15 @@
 <p align="center">
-  <img src="assets/images/Envato Xperience_GitHub.png" alt="Envato Xperience" />
+  <img src="assets/images/Envato Xperience_GitHub.png" alt="Envato XPerience" />
 </p>
 
-# Envato Xperience
+# Envato XPerience
 
-A Chrome extension that seamlessly removes preview iframes from Envato marketplaces and redirects you directly to the actual preview content. It features a modern, unobtrusive floating control panel injected directly into the page.
+A Chrome extension that enhances the Envato browsing experience with cleaner previews, preserved product context, optional live-demo helpers, and marketplace UI cleanup tools.
 
 ## Features
 
 - **Auto-Remove Mode**: Automatically removes preview frames on visit (enabled by default).
-- **Floating Control Panel**: A sleek, non-intrusive side panel to manage settings on the fly.
+- **Floating Control Panel**: A sleek, non-intrusive side panel with a focused Status view and a broader Admin view.
 - **Premium UI**: "Glassmorphism" design with smooth, switch-like animations.
 - **Context Preservation (Floating Widget)**: Optionally injects an elegant floating button panel on the creator's real external website, retaining Envato's "Buy Now" and "Details" links even after the redirect.
 - **Hide Ads Toggle**: Optionally suppresses major Envato promotional surfaces such as top banners, Elements cross-sells, footer promos, marketplace switcher ads, `top-sellers` author sidebars, and account/download promos.
@@ -18,7 +18,7 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 - **Local Image Cache**: Stores product hero images in `IndexedDB` with TTL and eviction rules instead of bloating extension storage.
 - **Contextual Status States**: Outside item pages, the panel switches to premium editorial states for browse, preview, and fallback contexts instead of showing a dead loading message.
 - **Compact Product Card**: The sidepanel now renders a tighter, Envato-inspired product card with title, author, category, price, sales, rating, last update, and direct live preview access.
-- **Support Section**: The settings tab includes a lightweight funding card with GitHub Sponsors, Buy Me a Coffee, and PayPal support options for independent development.
+- **Support Section**: The Admin tab includes a lightweight funding card with GitHub Sponsors, Buy Me a Coffee, and PayPal support options for independent development.
 - **Smart Detection**: Specifically extracts product metadata from Envato domains and targets the `.full-screen-preview__frame` container safely.
 - **Shadow DOM Isolation**: The UI and floating widgets are strictly encapsulated in Shadow DOM to avoid CSS bleeding onto any theme's complex stylesheets.
 
@@ -36,12 +36,12 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 
 ## Usage
 
-- **Auto-Remove**: Just browse Envato network sites (ThemeForest, CodeCanyon, VideoHive, etc.). Preview iframe wrappers will vanish automatically, directly redirecting you to clean theme websites.
+- **Auto-Remove**: Just browse Envato network sites (ThemeForest, CodeCanyon, VideoHive, etc.). Preview wrappers can redirect you directly into clean live demos.
 - **Floating Control Panel**: Click the extension icon to toggle the floating panel on any Envato page. From there, you can:
-    - Perform a manual Envato frame removal.
-    - Toggle the "Auto Remove" configuration.
-    - Enable **"Floating Widget"** to keep the essential Envato purchase links natively floating on the target theme demo.
-    - Enable **"Hide Ads"** to suppress supported Envato promotional blocks across browse, category, and item pages.
+    - Open the live preview directly from supported preview pages.
+    - Use `Status` for the current marketplace or product context.
+    - Use the `Admin` tab for core and enhancement controls such as **Auto Remove**, **Floating Widget**, **Hide Ads**, and **Hide Removed Items**.
+    - Open the bottom gear-powered **Settings** surface inside `Admin` for `About` and `Support`.
 
 ## Technical Details
 
@@ -50,10 +50,11 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
     - `envato-shared.js`: Shared helpers for Envato host detection, canonical `itemId` parsing, site naming, and settings compatibility/migration.
     - `marketplace-init.js`: Early `document_start` bootstrap that mirrors the `Hide Ads` setting into the page root before the marketplace paints, using both extension storage and a per-host `localStorage` mirror to reduce first-paint flicker.
     - `marketplace-overrides.css`: Declarative anti-flicker stylesheet that collapses supported Envato ad surfaces immediately when `Hide Ads` is enabled, including shared browse/category sidebars and downloads/account promo rails.
-    - `content.js`: Captures Envato metadata on previews, uses Envato `itemId` as the stable product key, fires secure redirects, and injects floating Shadow DOM widgets seamlessly into third-party target showcase websites.
+    - `content.js`: Captures Envato metadata on previews, uses Envato `itemId` as the stable product key, fires secure redirects, and injects floating Shadow DOM widgets into third-party target showcase websites.
+    - `removed-items.js`: Isolated DOM-safe transformer for unavailable downloads, including compact action bars, JIT thumbnail hydration, and lightweight downloads-list observation.
     - `content.css`: Base layout requirements for the floating panel.
     - `assets/`: Shared UI assets grouped into `fonts/`, `images/`, and `icons/`.
-    - `sidepanel.html/css/js`: An aesthetic UI implementation loaded inside an isolated inner iframe.
+    - `sidepanel.html/css/js`: An aesthetic UI implementation loaded inside an isolated inner iframe, with a compact Status view, an Admin control surface, and a bottom-triggered Settings sub-view.
     - `image-cache.js`: `IndexedDB`-backed image cache with checksum, TTL, and eviction rules for product artwork.
     - `background.js`: Event handler orchestration (relaying extension clicks).
 
@@ -107,7 +108,8 @@ noframevato/
 ├── package.json        # Local Playwright smoke tooling entrypoints
 ├── scripts/            # Playwright extension smoke config/spec
 ├── .env.local.example  # Local Playwright auth template for manual DOM debugging
-├── content.js          # Injection logic
+├── content.js          # Preview, widget, and panel bridge logic
+├── removed-items.js    # Removed/unavailable downloads UI enhancement
 ├── content.css         # Container styles
 ├── assets/             # Shared UI assets
 │   ├── fonts/          # Local bundled fonts for extension UI

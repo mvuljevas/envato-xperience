@@ -16,9 +16,12 @@ La herramienta está estructurada pura y netamente para Manifest V3. El flujo de
    - Usa el `itemId` numérico de Envato como clave estable al reconciliar metadata entre `/item`, `/reviews`, `/comments` y `/support`.
    - Expone metadata adicional del producto (`author`, `category`, `livePreviewUrl`) para alimentar la tarjeta compacta del sidepanel.
    - Analiza el historial local en su próxima ejecución limpia dentro del sitio destino y si encuentra metadata fresca (menos de 2 horas), renderiza estéticamente el **Floating Widget**.
+- `removed-items.js`: Encapsula la lógica de `Hide Removed Items` para mantener separado el tratamiento de descargas inactivas del resto del flujo preview/widget.
 - `sidepanel.html / css / js`: Se encarga exclusivamente de la UI del panel, los toggles de configuración y de pedir a `content.js` que le informe sobre el estatus del entorno.
    - Renderiza una tarjeta de producto compacta con precio, rating, ventas, última actualización y CTA a Live Preview.
-   - Expone `Hide Ads` como preferencia sincronizada.
+   - Mantiene `Status` como superficie editorial/contextual.
+   - Usa `Admin` como centro de orquestación de mejoras y toggles principales.
+   - Abre una sub-vista `Settings` desde un botón de tuerca ubicado al bottom de `Admin`, reservando allí superficies secundarias como `About` y `Support`.
 - `assets/`: Carpeta de assets del panel/UI separada en `fonts/`, `images/` e `icons/`.
 - `image-cache.js`: Gestiona el caché local de imágenes en `IndexedDB` para evitar inflar `chrome.storage.local`.
 - `.env.local.example`: Plantilla local para pruebas autenticadas con Playwright. Usa `ENVATO_TEST_USERNAME`, `ENVATO_TEST_PASSWORD` y `ENVATO_ACCOUNT_URL`.
@@ -58,7 +61,8 @@ Cualquier nueva función o corrección de bugs debe revisarse validando que amba
 2. El modo visual (Floating Widget): Limpia estilos y ancla el panel flotante.
 3. La continuidad de datos: el sidepanel debe seguir mostrando el mismo producto correcto aunque cambie la sub-ruta de Envato.
 4. La supresión temprana de promos: `Hide Ads` debe entrar antes del paint y no depender de un parche tardío en `content.js`.
-5. El smoke automation: el bridge de testing en `content.js` solo debe abrir/cerrar el panel y exponer estado mínimo. No convertirlo en una API paralela de negocio.
+5. El flujo de `Hide Removed Items`: la transformación de descargas inactivas debe seguir siendo segura, reversible visualmente y aislada del resto del content script.
+6. El smoke automation: el bridge de testing en `content.js` solo debe abrir/cerrar el panel y exponer estado mínimo. No convertirlo en una API paralela de negocio.
 No rompas un modo para arreglar otro.
 
 ## 4. Metodología Segura de Iteración
@@ -80,7 +84,7 @@ Para evitar colapsos de contexto durante sesiones largas, cada iteración debe d
 4. **Cierre obligatorio de iteración**:
    - Resumir qué quedó hecho.
    - Declarar explícitamente qué no se validó todavía.
-   - Sugerir el siguiente paso lógico inmediato.
+   - Sugerir explícitamente el siguiente paso lógico inmediato, aunque el usuario no lo pida.
 
 5. **Artefactos temporales**:
    - Si se usan snapshots visuales, logs o resultados de smoke, deben conservarse solo mientras aporten valor a la iteración.

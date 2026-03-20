@@ -180,3 +180,27 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Validación: requiere recarga de la extensión y comprobación visual de logos, estado `Outside Envato` y CTAs de `Support`; el smoke debe seguir verde.
 - Riesgos pendientes: quedan carpetas legacy vacías por limpiar (`fonts/`, `images/`) si ya no contienen nada útil.
 - Próximo paso lógico: validar que el árbol nuevo funcione y luego limpiar las carpetas legacy vacías para dejar el repo coherente.
+
+### 2026-03-20 - Admin view, safe Removed Items rendering, and nomenclature cleanup
+- Objetivo: alinear el producto con su identidad actual como enhancer, sintetizar los toggles clave en `Status`, mover la orquestación ampliada a `Admin`, y sacar deuda estructural/obsoleta del repo.
+- Archivos: `manifest.json`, `content.js`, `removed-items.js`, `sidepanel.html`, `sidepanel.css`, `sidepanel.js`, `image-cache.js`, `README.md`, `docs/WORKFLOW.md`, `docs/COMPLIANCE.md`, `docs/ROADMAP.md`, `docs/IMAGECACHE.md`, `docs/AGENTSINSTRUCTIONS.md`.
+- Cambios: se separó `Hide Removed Items` a `removed-items.js`; se eliminó el uso riesgoso de `innerHTML` para esa superficie construyendo la UI con DOM APIs; se removieron scripts ad hoc ya obsoletos (`fix_image.js`, `update_script.js`); el panel pasó de `Status/Settings` a `Status/Admin`, añadiendo quick controls para `Auto Remove`, `Floating Widget`, `Hide Removed Items` y `Hide Ads`, y dejando `Admin` como superficie más preparada para futuras opciones de experiencia.
+- Validación: `node --check` sobre los scripts principales; smoke baseline de Playwright sobre item page, top-sellers y downloads autenticado.
+- Riesgos pendientes: el nuevo layout del panel requiere validación visual manual tras recargar la extensión; la superficie `Admin` está preparada para crecer, pero todavía no existe un segundo bloque de opciones más allá de `Core Experience` y `Enhance Envato`.
+- Próximo paso lógico: recargar la extensión, revisar visualmente `Status/Admin`, y luego decidir la siguiente familia de enhancements que entrará en `Admin`.
+
+### 2026-03-20 - Admin settings subview
+- Objetivo: limpiar `Status`, dejar `Admin` más enfocado y empezar a estructurar una sub-vista real de configuración para opciones secundarias.
+- Archivos: `sidepanel.html`, `sidepanel.css`, `sidepanel.js`, `README.md`, `docs/WORKFLOW.md`.
+- Cambios: se removió `Quick Controls` de `Status`; `Admin` se consolidó como superficie principal de toggles; `About` y `Support` se movieron a una sub-vista `Settings` dentro de `Admin`.
+- Validación: `node --check sidepanel.js`; `npm run smoke:extension` con `3 passed`.
+- Riesgos pendientes: falta validación visual manual del layout final de `Admin` y de la transición hacia la sub-vista `Settings`.
+- Próximo paso lógico: revisar el layout real y luego decidir si la siguiente familia de mejoras de `Admin` será `Enhance UI`, `Marketplace Utilities` o una organización por categorías más formal.
+
+### 2026-03-20 - Bottom Settings trigger in Admin
+- Objetivo: corregir la visibilidad del acceso a `Settings` dentro de `Admin` y dejar trazabilidad explícita del cierre de iteración.
+- Archivos: `sidepanel.html`, `README.md`, `docs/WORKFLOW.md`, `docs/AGENTSINSTRUCTIONS.md`, `docs/ROADMAP.md`.
+- Cambios: el botón de tuerca `Settings` se movió desde la sub-vista oculta hacia el bottom real de `Admin`; la documentación se actualizó para reflejar que `Status` es contextual, `Admin` concentra los toggles, y el acceso a `Settings` ocurre desde el borde inferior; además se reforzó la instrucción operativa de siempre proponer el siguiente paso lógico al cerrar una iteración.
+- Validación: inspección de markup; `node --check sidepanel.js`.
+- Riesgos pendientes: falta validación visual manual del botón en el panel recargado.
+- Próximo paso lógico: recargar la extensión, confirmar visualmente el botón de `Settings` en `Admin`, y luego definir la primera familia concreta de opciones para `Enhance Envato`.

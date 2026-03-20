@@ -1,6 +1,6 @@
 # Instrucciones para Agentes (Agent Instructions)
 
-Al modificar la extensión Envato Xperience y continuar con su desarrollo, los agentes deben apegarse a las siguientes directrices:
+Al modificar la extensión Envato XPerience y continuar con su desarrollo, los agentes deben apegarse a las siguientes directrices:
 
 1. **Zero-Dependencies**: No se deben agregar librerías externas o frameworks como React, Vue, jQuery o TailwindCSS. Usa JavaScript (Vanilla JS), HTML5 y CSS3 nativos para mantener el tamaño de la extensión mínimo y su rendimiento óptimo.
 
@@ -28,5 +28,5 @@ Al modificar la extensión Envato Xperience y continuar con su desarrollo, los a
 6. **Persistencia de Contexto Operativo**:
    - Al final de cada iteración relevante, actualizar `docs/ITERATIONLOG.md` con un resumen corto pero útil.
    - Si se cambia arquitectura, flujo de carga, UX principal o compliance, actualizar también la doc viva correspondiente en la misma iteración.
-   - Al cerrar cada respuesta al usuario, indicar qué quedó validado, qué no quedó validado y sugerir el siguiente paso lógico.
+   - Al cerrar cada respuesta al usuario, indicar qué quedó validado, qué no quedó validado y sugerir explícitamente el siguiente paso lógico, incluso si el usuario no lo pide.
    - Si se generan snapshots o logs temporales para debugging, mencionarlos en el cierre de iteración y limpiar los que ya no aporten valor.

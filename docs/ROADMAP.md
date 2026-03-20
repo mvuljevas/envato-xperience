@@ -1,4 +1,4 @@
-# Roadmap: Envato Xperience
+# Roadmap: Envato XPerience
 
 ## Fase 1: Contexto y UX del Panel (Completado)
 - **Objetivo**: Brindar feedback claro al usuario sobre lo que la extensión está detectando.
@@ -24,7 +24,7 @@
 ## Fase 4: Hardening de Producto y Compliance (Completado)
 - **Objetivo**: Hacer más robusta la continuidad de datos entre sub-vistas de Envato y mantener el proyecto alineado con MV3.
 - **Solución implementada**:
-  - Rebranding completo a **Envato Xperience** en manifiesto, UI y documentación.
+  - Rebranding completo a **Envato XPerience** en manifiesto, UI y documentación.
   - Eliminación de assets remotos en páginas de extensión para mantener el panel autocontenido.
   - Render seguro en panel/widget con DOM APIs en lugar de `innerHTML`.
   - Caché de imágenes en `IndexedDB` con TTL y límites explícitos.
@@ -36,7 +36,7 @@
 - **Solución implementada**:
   - Tarjeta compacta con título, autor, categoría, precio, rating, ventas y última actualización.
   - CTA directo a **Live Preview** cuando la URL está disponible en la página del item.
-  - Ajustes de layout y espaciado en Settings para mantener consistencia entre toggles.
+  - Ajustes de layout y espaciado en el panel administrativo para mantener consistencia entre toggles y superficies secundarias.
 
 ## Fase 6: Removed Items UI Management (Completado)
 - **Objetivo**: Abordar la pobre experiencia visual y técnica nativa de Envato Market cuando un autor elimina un archivo del catálogo o lo marca inaccesible temporalmente.
@@ -47,6 +47,7 @@
   - Sistema autónomo y encapsulado de _Custom CSS Tooltips_ renderizado enteramente desde la extensión, superando los retrasos nativos del navegador.
 
 ## Fase 7: Próximos Pasos (Futuro)
+- Consolidar una vista `Admin` más amplia para orquestar nuevas mejoras de experiencia sin sobrecargar la vista principal de `Status`.
 - **Base de Datos Global de Items (Backend API)**: Migrar el tracking de items deprecados/eliminados desde el chequeo local del DOM a un backend centralizado para compartir el estado de los "Items Eliminados" instantáneamente con todos los usuarios antes de que intenten cargarlos o acceder a ellos.
 - Integrar sección de "Related Products" (Productos Relacionados) dentro del panel lateral en las vistas de producto.
 - Permitir al usuario arrastrar el widget flotante a distintas esquinas de la pantalla.
