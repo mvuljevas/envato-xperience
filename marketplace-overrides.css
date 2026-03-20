@@ -234,7 +234,8 @@ html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable)
     transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
     pointer-events: none;
     z-index: 105;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.15);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .ex-text-tooltip::after {

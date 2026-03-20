@@ -623,7 +623,7 @@ function injectDeprecatedBars() {
       <div class="ex-removed-text">ITEM REMOVED</div>
       <div class="ex-removed-line"></div>
       <div class="ex-removed-actions">
-         <div class="ex-tooltip-wrapper ex-action-wrapper">
+         <div class="ex-tooltip-wrapper">
             <button class="ex-btn ex-btn-info">${infoSvg}</button>
             <div class="ex-tooltip">
                <div class="ex-tooltip-img-wrapper">
@@ -631,7 +631,6 @@ function injectDeprecatedBars() {
                </div>
                <div class="ex-tooltip-title">${itemTitle}</div>
             </div>
-            <div class="ex-text-tooltip">Item Info</div>
          </div>
          <div class="ex-action-wrapper">
          ${licenseUrl 
