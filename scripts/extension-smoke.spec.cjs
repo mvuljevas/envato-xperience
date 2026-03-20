@@ -84,7 +84,7 @@ test("opens the floating panel on an item page", async ({}, testInfo) => {
 
   await dispatchContentTestEvent(page, "openPanel");
   await page.waitForFunction(() => {
-    const host = document.querySelector("#envato-frame-remover-root");
+    const host = document.querySelector("#envato-xperience-root");
     const wrapper = host?.shadowRoot?.querySelector("#panel-wrapper");
     return Boolean(wrapper?.classList.contains("visible"));
   });
@@ -223,7 +223,7 @@ async function dispatchContentTestEvent(page, action) {
 
 async function waitForPanelFrame(page, currentExtensionId) {
   await page.waitForFunction(() => {
-    const host = document.querySelector("#envato-frame-remover-root");
+    const host = document.querySelector("#envato-xperience-root");
     return Boolean(host?.shadowRoot?.querySelector("iframe"));
   });
 

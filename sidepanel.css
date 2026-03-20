@@ -66,7 +66,7 @@ body {
 header {
   background: #262626;
   flex-shrink: 0;
-  padding: 30px 20px 20px 20px;
+  padding: 26px 20px 0 20px;
   position: relative;
   text-align: center;
 }
@@ -111,20 +111,16 @@ h1 {
 /* Tabs Navigation */
 .tabs {
   background: rgba(0, 0, 0, 0.2);
-  /* Darker inset track */
-  border-radius: 30px;
   display: flex;
-  padding: 4px;
-  /* Slightly more padding for the 'track' feel */
+  margin: 0 -20px;
+  min-height: 54px;
+  padding: 0;
   position: relative;
-  margin-bottom: 20px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
-  /* Inset shadow for depth */
+  width: calc(100% + 40px);
 }
 
 .tab-btn {
   background: transparent;
-  border-radius: 25px;
   border: none;
   color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
@@ -133,7 +129,8 @@ h1 {
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 1.5px;
-  padding: 10px;
+  min-height: 54px;
+  padding: 14px 10px;
   text-transform: uppercase;
   transition: color 0.2s ease;
   z-index: 2;
@@ -148,22 +145,14 @@ h1 {
 
 .tab-glider {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  /* Use top/bottom instead of height calc for safety */
-  left: 4px;
-  width: calc(50% - 4px);
-  /* Height is implicit via top/bottom */
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
   background: #ffffff !important;
-  /* Force white background */
-  border-radius: 25px;
-  /* Snappy spring animation */
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   z-index: 1;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-  /* Slightly stronger shadow */
   pointer-events: none;
-  /* Ensure clicks pass through to buttons if z-index is weird */
 }
 
 /* When the container says we're on the second tab, move the glider */
@@ -186,6 +175,18 @@ h1 {
 
 .tab-panel.active {
   display: block;
+}
+
+#adminTab.active {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+#adminMainView {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
 }
 
 @keyframes slideUp {
@@ -213,6 +214,27 @@ h1 {
 .context-card {
   overflow: hidden;
   position: relative;
+}
+
+.envato-controls {
+  text-align: center;
+}
+
+.context-card-shell {
+  padding: 16px;
+}
+
+.context-card-media {
+  background: #f8f9fa;
+  border-bottom: 1px solid #f1f3f5;
+  margin: -16px -16px 16px -16px;
+}
+
+.context-card-image {
+  display: none;
+  object-fit: cover;
+  vertical-align: middle;
+  width: 100%;
 }
 
 .context-card .image-wrapper {
@@ -542,15 +564,33 @@ h1 {
 .control-group {
   align-items: center;
   display: flex;
+  gap: 16px;
   justify-content: space-between;
 }
 
-label {
+.control-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  text-align: left;
+}
+
+.control-title {
   color: #495057;
+  display: block;
   font-family: var(--display-font);
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.3px;
+}
+
+.control-caption {
+  color: #8b949e;
+  display: block;
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 button.main-action {
@@ -579,7 +619,7 @@ button.main-action:active {
   transform: translateY(0);
 }
 
-/* Settings specific */
+/* Admin specific */
 .settings-header {
   border-bottom: 1px solid #f0f0f0;
   color: #adb5bd;
@@ -600,6 +640,87 @@ button.main-action:active {
 
 .settings-controls .card {
   margin-bottom: 0;
+}
+
+.admin-settings-kicker {
+  color: #a7b0b8;
+  font-family: var(--display-font);
+  font-size: 12px;
+  letter-spacing: 1.2px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.admin-icon-button,
+.admin-back-button {
+  align-items: center;
+  background: #f6f8fa;
+  border: 1px solid #d0d7de;
+  border-radius: 12px;
+  color: #2f3740;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+  min-height: 42px;
+  transition:
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease,
+    color 0.18s ease;
+}
+
+.admin-icon-button {
+  box-shadow: 0 1px 2px rgba(27, 31, 36, 0.05);
+  min-width: 42px;
+  padding: 0;
+}
+
+.admin-back-button {
+  font-family: var(--display-font);
+  font-size: 12px;
+  letter-spacing: 0.7px;
+  padding: 0 12px;
+  text-transform: uppercase;
+}
+
+.admin-icon-button svg,
+.admin-back-button svg {
+  fill: none;
+  height: 16px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  width: 16px;
+}
+
+.admin-icon-button:hover,
+.admin-back-button:hover {
+  background: #eef2f6;
+  border-color: #c7d0d9;
+  box-shadow: 0 2px 4px rgba(27, 31, 36, 0.08);
+  color: #24292f;
+}
+
+.admin-settings-header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.admin-bottom-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.admin-note {
+  color: #6e7680;
+  font-size: 12px;
+  line-height: 1.6;
 }
 
 .about-info {

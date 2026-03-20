@@ -1,6 +1,6 @@
 /**
- * Envato Xperience - Content Script
- * 1. Handles frame removal on Envato pages
+ * Envato XPerience - Content Script
+ * 1. Handles preview-to-live navigation on Envato pages
  * 2. Injects the floating in-page sidepanel using Shadow DOM for style isolation
  */
 
@@ -20,7 +20,7 @@ function createPanel() {
 
   // Create the host for the Shadow DOM
   panelContainer = document.createElement("div");
-  panelContainer.id = "envato-frame-remover-root";
+  panelContainer.id = "envato-xperience-root";
   // Styles handled by content.css (:host)
 
   // Attach Shadow DOM
@@ -159,9 +159,9 @@ function isEnvatoMarketplaceLogo(url) {
 }
 
 /**
- * Logic to remove the Envato preview frame or apply Widget Mode
+ * Opens the live preview destination, optionally preserving product context
  */
-function removeFrame(useWidgetMode = false) {
+function openLivePreview(useWidgetMode = false) {
   try {
     const previewIframe = document.querySelector(
       "iframe.full-screen-preview__frame",
@@ -191,7 +191,7 @@ function removeFrame(useWidgetMode = false) {
       if (document.body.style.marginTop) document.body.style.marginTop = "0px";
     }
   } catch (error) {
-    console.error("[Envato Xperience] Error removing frame:", error);
+    console.error("[Envato XPerience] Error opening live preview:", error);
   }
 }
 
@@ -542,215 +542,6 @@ function injectWidget(info) {
 }
 
 /**
- * Advanced Hide Deprecated UX
- */
-function injectDeprecatedBars() {
-  const deprecatedItems = document.querySelectorAll('li.download:has(.download__unavailable)');
-  deprecatedItems.forEach(li => {
-    if (li.dataset.exProcessed) return;
-    li.dataset.exProcessed = 'true';
-
-    const itemId = li.id.replace('item-', '');
-    // EXTRACT IMAGE VIA ITERATIVE PROBING
-    let finalSrcToUse = null;
-    const allImages = Array.from(li.querySelectorAll('img'));
-    for (const img of allImages) {
-        let candidate = img.getAttribute('data-src') || img.getAttribute('src') || img.src;
-        if (candidate && !candidate.startsWith('data:image') && !candidate.includes('placeholder')) {
-            finalSrcToUse = candidate;
-            break; 
-        }
-    }
-    
-    if (!finalSrcToUse) {
-        const previewEl = li.querySelector('[data-preview-url]');
-        if (previewEl) finalSrcToUse = previewEl.getAttribute('data-preview-url');
-    }
-    
-    if (!finalSrcToUse && itemId) {
-        const globalImg = document.querySelector(`img[data-item-id="${itemId}"]`);
-        if (globalImg) finalSrcToUse = globalImg.getAttribute('data-src') || globalImg.getAttribute('src') || globalImg.src;
-    }
-
-    if (!finalSrcToUse && itemId && window.EnvatoImageCache) {
-      window.EnvatoImageCache.getImage(itemId).then(cached => {
-         if (cached && cached.blob) {
-            const url = URL.createObjectURL(cached.blob);
-            const placeholder = bar.querySelector('.ex-placeholder');
-            const imgWrapper = bar.querySelector('.ex-tooltip-img-wrapper');
-            
-            const img = document.createElement('img');
-            img.src = url;
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.display = 'block';
-            
-            img.addEventListener('error', () => {
-              img.style.display = 'none';
-              placeholder.style.display = 'flex';
-            });
-            placeholder.style.display = 'none';
-            imgWrapper.insertBefore(img, placeholder);
-         }
-      }).catch(err => console.error("Xperience Cache Error:", err));
-    }
-
-    const titleEl = li.querySelector('h3 a') || li.querySelector('h3') || li.querySelector('.t-heading') || li.querySelector('[class*="title"]');
-    const itemTitle = titleEl ? titleEl.textContent.trim() : 'Unknown Item';
-
-    let licenseUrl = null;
-    const allLinks = Array.from(li.querySelectorAll('a'));
-    for (const a of allLinks) {
-        if (a.href && a.textContent && a.textContent.toLowerCase().includes('license certificate')) {
-            licenseUrl = a.href;
-            break;
-        }
-    }
-
-    const bar = document.createElement('div');
-    bar.className = 'envato-xperience-removed-bar';
-    
-    const infoSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>`;
-    const expandSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"></path><path d="M10 14L21 3"></path><path d="M9 21H3v-6"></path><path d="M14 10L3 21"></path></svg>`;
-    const collapseSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>`;
-    const trashSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
-    const placeholderSvg = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b0b8c0" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
-    const downloadSvg = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`;
-
-    bar.innerHTML = `
-      <div class="ex-removed-line"></div>
-      <div class="ex-removed-text">ITEM REMOVED</div>
-      <div class="ex-removed-line"></div>
-      <div class="ex-removed-actions">
-         <div class="ex-tooltip-wrapper">
-            <button class="ex-btn ex-btn-info">${infoSvg}</button>
-            <div class="ex-tooltip">
-               <div class="ex-tooltip-img-wrapper">
-                 <div class="ex-placeholder">${placeholderSvg}</div>
-               </div>
-               <div class="ex-tooltip-title">${itemTitle}</div>
-            </div>
-         </div>
-         <div class="ex-action-wrapper">
-         ${licenseUrl 
-            ? `<a href="${licenseUrl}" target="_blank" class="ex-btn ex-btn-download">${downloadSvg}</a><div class="ex-text-tooltip">Download Licence TXT</div>` 
-            : `<button class="ex-btn ex-btn-download ex-disabled" disabled>${downloadSvg}</button><div class="ex-text-tooltip">Download Not Available</div>`}
-         </div>
-         <div class="ex-action-wrapper">
-            <button class="ex-btn ex-btn-expand">${expandSvg}</button>
-            <div class="ex-text-tooltip">Toggle Original Item</div>
-         </div>
-         <div class="ex-action-wrapper">
-            <button class="ex-btn ex-btn-delete">${trashSvg}</button>
-            <div class="ex-text-tooltip">Remove/Hide From Library</div>
-         </div>
-      </div>
-    `;
-
-    // Safely embed extracted image without blind cloning to bypass lazy loading quirks
-    if (finalSrcToUse) {
-      // Cache this image in IndexedDB for future visits
-      const srcToUse = finalSrcToUse;
-      if (itemId && srcToUse && window.EnvatoImageCache) {
-          window.EnvatoImageCache.cacheImage(itemId, srcToUse).catch(err => console.error("Cache Error:", err));
-      }
-
-      const exactImg = document.createElement('img');
-      exactImg.style.width = '100%';
-      exactImg.style.height = '100%';
-      exactImg.style.objectFit = 'cover';
-      exactImg.style.display = 'block';
-      
-      const imgWrapper = bar.querySelector('.ex-tooltip-img-wrapper');
-      const placeholder = bar.querySelector('.ex-placeholder');
-
-      exactImg.addEventListener('error', () => {
-        exactImg.style.display = 'none';
-        placeholder.style.display = 'flex';
-      });
-
-      exactImg.src = srcToUse;
-      placeholder.style.display = 'none';
-      imgWrapper.insertBefore(exactImg, placeholder);
-    }
-
-    const tooltipWrapper = bar.querySelector('.ex-tooltip-wrapper');
-    tooltipWrapper.addEventListener('mouseenter', () => {
-        if (bar.querySelector('.ex-tooltip-img-wrapper img')) return;
-
-        let lazySrc = null;
-        const freshImages = Array.from(li.querySelectorAll('img'));
-        for (const img of freshImages) {
-            let candidate = img.getAttribute('data-src') || img.getAttribute('src') || img.src;
-            if (candidate && !candidate.startsWith('data:image') && !candidate.includes('placeholder')) {
-                lazySrc = candidate;
-                break; 
-            }
-        }
-        
-        if (!lazySrc) {
-            const previewEl = li.querySelector('[data-preview-url]');
-            if (previewEl) lazySrc = previewEl.getAttribute('data-preview-url');
-        }
-
-        if (lazySrc) {
-            const placeholder = bar.querySelector('.ex-placeholder');
-            const imgWrapper = bar.querySelector('.ex-tooltip-img-wrapper');
-            
-            const img = document.createElement('img');
-            img.src = lazySrc;
-            img.style.width = '100%';
-            img.style.height = '100%';
-            img.style.objectFit = 'cover';
-            img.style.display = 'block';
-            
-            img.addEventListener('error', () => {
-              img.style.display = 'none';
-              placeholder.style.display = 'flex';
-            });
-            placeholder.style.display = 'none';
-            imgWrapper.insertBefore(img, placeholder);
-
-            if (itemId && window.EnvatoImageCache) {
-                 window.EnvatoImageCache.cacheImage(itemId, lazySrc).catch(() => {});
-            }
-        }
-    });
-
-    const expandBtn = bar.querySelector('.ex-btn-expand');
-    expandBtn.addEventListener('click', () => {
-      const isExpanded = li.classList.toggle('ex-expanded');
-      expandBtn.classList.toggle('ex-active');
-      expandBtn.innerHTML = isExpanded ? collapseSvg : expandSvg;
-    });
-
-    const deleteBtn = bar.querySelector('.ex-btn-delete');
-    deleteBtn.addEventListener('click', () => {
-      li.remove();
-    });
-
-    const originalContainer = document.createElement('div');
-    originalContainer.className = 'ex-original-content';
-    while(li.firstChild) {
-      originalContainer.appendChild(li.firstChild);
-    }
-    li.appendChild(originalContainer);
-    
-    li.prepend(bar);
-  });
-}
-
-function observeDownloads() {
-  const downloadsList = document.querySelector('.list--downloads');
-  if (downloadsList) {
-    const observer = new MutationObserver(() => injectDeprecatedBars());
-    observer.observe(downloadsList, { childList: true, subtree: true });
-  }
-  injectDeprecatedBars();
-}
-
-/**
  * Initialize the script
  */
 function initialize() {
@@ -766,16 +557,13 @@ function initialize() {
       : false;
 
     if (autoRemoveEnabled && isEnvatoPreviewSite) {
-      removeFrame(widgetModeEnabled);
+      openLivePreview(widgetModeEnabled);
     } else if (!isEnvatoPreviewSite && widgetModeEnabled) {
       // Check if we are on a theme's site after being redirected
       checkAndInjectWidget();
     }
 
-    // Always attempt to observe downloads for the Deprecated Items feature if we are on a potential downloads page
-    if (window.location.pathname.includes('/downloads') || document.querySelector('.list--downloads')) {
-      observeDownloads();
-    }
+    window.EnvatoRemovedItems?.initialize?.();
   });
 }
 
@@ -794,7 +582,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       break;
     case "remove_frame":
       chrome.storage.sync.get(["widgetMode"], function(result) {
-          removeFrame(result.widgetMode === true);
+          openLivePreview(result.widgetMode === true);
       });
       sendResponse({ success: true });
       break;

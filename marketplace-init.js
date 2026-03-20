@@ -1,7 +1,7 @@
 if (window === window.top) {
   const shared = window.EnvatoXperienceShared;
   if (!shared) {
-    console.warn("[Envato Xperience] Shared helpers unavailable in marketplace-init.");
+    console.warn("[Envato XPerience] Shared helpers unavailable in marketplace-init.");
   }
 
   const root = document.documentElement;

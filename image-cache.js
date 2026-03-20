@@ -1,5 +1,5 @@
 /**
- * Envato Xperience - Image Cache
+ * Envato XPerience - Image Cache
  * Stores product preview images in IndexedDB to avoid filling chrome.storage.local.
  */
 
@@ -39,26 +39,6 @@
     });
 
     return dbPromise;
-  }
-
-  function withStore(mode, callback) {
-    return openDatabase().then((db) => new Promise((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, mode);
-      const store = transaction.objectStore(STORE_NAME);
-      const result = callback(store, transaction);
-
-      transaction.oncomplete = function () {
-        resolve(result);
-      };
-
-      transaction.onerror = function () {
-        reject(transaction.error);
-      };
-
-      transaction.onabort = function () {
-        reject(transaction.error);
-      };
-    }));
   }
 
   function requestToPromise(request) {
