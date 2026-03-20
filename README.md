@@ -13,6 +13,7 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
 - **Premium UI**: "Glassmorphism" design with smooth, switch-like animations.
 - **Context Preservation (Floating Widget)**: Optionally injects an elegant floating button panel on the creator's real external website, retaining Envato's "Buy Now" and "Details" links even after the redirect.
 - **Hide Ads Toggle**: Optionally suppresses major Envato promotional surfaces such as top banners, Elements cross-sells, footer promos, marketplace switcher ads, `top-sellers` author sidebars, and account/download promos.
+- **Hide Removed Items**: Optionally compacts deprecated/removed items in your Downloads page into elegant, sleek action bars. Offers Just-In-Time thumbnail extraction on hover, native fallback certificate downloads, and instant DOM cleanups.
 - **Stable Product Identity**: Uses the canonical Envato `itemId` from `/item/.../<id>` URLs so product data stays aligned across item, reviews, comments, and support tabs.
 - **Local Image Cache**: Stores product hero images in `IndexedDB` with TTL and eviction rules instead of bloating extension storage.
 - **Contextual Status States**: Outside item pages, the panel switches to premium editorial states for browse, preview, and fallback contexts instead of showing a dead loading message.

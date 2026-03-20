@@ -38,7 +38,15 @@
   - CTA directo a **Live Preview** cuando la URL está disponible en la página del item.
   - Ajustes de layout y espaciado en Settings para mantener consistencia entre toggles.
 
-## Fase 6: Próximos Pasos (Futuro)
+## Fase 6: Removed Items UI Management (Completado)
+- **Objetivo**: Abordar la pobre experiencia visual y técnica nativa de Envato Market cuando un autor elimina un archivo del catálogo o lo marca inaccesible temporalmente.
+- **Solución implementada**:
+  - Encapsulamiento total del ítem inerte en un bloque UI elegante y plegable (accordion de `max-height`) para rescatar espacio vertical.
+  - Inyección de una botonera de acciones paramétrica (`.envato-xperience-removed-bar`) que incluye íconos expansibles de descarga nativa de licencia, Info y un botón de ocultamiento (trash).
+  - Hydratación "Just-In-Time" (JIT) del Thumbnail basada en interacción de usuario o cache de IndexedDB para evadir el `lazy-loading` asíncrono y los placeholdering del backend de Envato.
+  - Sistema autónomo y encapsulado de _Custom CSS Tooltips_ renderizado enteramente desde la extensión, superando los retrasos nativos del navegador.
+
+## Fase 7: Próximos Pasos (Futuro)
 - **Base de Datos Global de Items (Backend API)**: Migrar el tracking de items deprecados/eliminados desde el chequeo local del DOM a un backend centralizado para compartir el estado de los "Items Eliminados" instantáneamente con todos los usuarios antes de que intenten cargarlos o acceder a ellos.
 - Integrar sección de "Related Products" (Productos Relacionados) dentro del panel lateral en las vistas de producto.
 - Permitir al usuario arrastrar el widget flotante a distintas esquinas de la pantalla.
