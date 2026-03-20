@@ -211,6 +211,49 @@ html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable)
     display: flex;
 }
 
+/* Text Tooltips for Action Buttons */
+.ex-action-wrapper {
+    position: relative;
+    display: flex;
+}
+
+.ex-text-tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background-color: #313539;
+    color: #ffffff;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+    pointer-events: none;
+    z-index: 105;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.ex-text-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 4px;
+    border-style: solid;
+    border-color: #313539 transparent transparent transparent;
+}
+
+.ex-action-wrapper:hover > .ex-text-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
 /* The info button gets active styles while hovering the wrapper */
 .ex-tooltip-wrapper:hover .ex-btn-info {
     background-color: #e5e8eb;

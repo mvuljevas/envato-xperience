@@ -12,6 +12,10 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Próximo paso lógico:
 
 ## Entries
+### 2026-03-20 - Custom CSS Tooltips for Action Buttons
+- Objetivo: reemplazar los tooltips genéricos nativos del sistema operativo (basados en el atributo HTML `title`) por elegantes pop-ups descriptivos puramente CSS y unificados con la UI de Envato.
+- Archivos: `content.js` y `marketplace-overrides.css`.
+- Cambios: En `content.js` destituimos la propiedad `title` de todos los botones para evitar superposiciones con el SO, envolviendo cada botón en un contenedor `.ex-action-wrapper` junto a una sub-caja `.ex-text-tooltip` con la descripción respectiva ("Download Licence TXT", "Item Info", "Toggle Original Item", etc). En `marketplace-overrides.css` definimos estas cajas ocultas flotantes en la parte inferior de los iconos (`translateY` para efecto pop-up) reaccionando al estado `:hover`, consolidando una estética moderna, responsiva, nítida y unánime en vez de la disparidad propia de los tooltips de Chrome/Safari.
 
 ### 2026-03-20 - Removed Items (Hover JIT Image extraction & Text fallback)
 - Objetivo: solucionar que algunos ítems se quedaban en el Placeholder por el "lazy loading" asíncrono de Envato Market, y resolver el fallo en la detección del botón de descarga de la licencia.

@@ -623,20 +623,29 @@ function injectDeprecatedBars() {
       <div class="ex-removed-text">ITEM REMOVED</div>
       <div class="ex-removed-line"></div>
       <div class="ex-removed-actions">
-         <div class="ex-tooltip-wrapper">
-            <button class="ex-btn ex-btn-info" title="Item info">${infoSvg}</button>
+         <div class="ex-tooltip-wrapper ex-action-wrapper">
+            <button class="ex-btn ex-btn-info">${infoSvg}</button>
             <div class="ex-tooltip">
                <div class="ex-tooltip-img-wrapper">
                  <div class="ex-placeholder">${placeholderSvg}</div>
                </div>
                <div class="ex-tooltip-title">${itemTitle}</div>
             </div>
+            <div class="ex-text-tooltip">Item Info</div>
          </div>
+         <div class="ex-action-wrapper">
          ${licenseUrl 
-            ? `<a href="${licenseUrl}" target="_blank" class="ex-btn ex-btn-download" title="Download Licence TXT">${downloadSvg}</a>` 
-            : `<button class="ex-btn ex-btn-download ex-disabled" title="Download Not Available" disabled>${downloadSvg}</button>`}
-         <button class="ex-btn ex-btn-expand" title="Toggle original item">${expandSvg}</button>
-         <button class="ex-btn ex-btn-delete" title="Remove from list">${trashSvg}</button>
+            ? `<a href="${licenseUrl}" target="_blank" class="ex-btn ex-btn-download">${downloadSvg}</a><div class="ex-text-tooltip">Download Licence TXT</div>` 
+            : `<button class="ex-btn ex-btn-download ex-disabled" disabled>${downloadSvg}</button><div class="ex-text-tooltip">Download Not Available</div>`}
+         </div>
+         <div class="ex-action-wrapper">
+            <button class="ex-btn ex-btn-expand">${expandSvg}</button>
+            <div class="ex-text-tooltip">Toggle Original Item</div>
+         </div>
+         <div class="ex-action-wrapper">
+            <button class="ex-btn ex-btn-delete">${trashSvg}</button>
+            <div class="ex-text-tooltip">Remove from list</div>
+         </div>
       </div>
     `;
 
