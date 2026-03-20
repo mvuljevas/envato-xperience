@@ -643,7 +643,7 @@ function injectDeprecatedBars() {
          </div>
          <div class="ex-action-wrapper">
             <button class="ex-btn ex-btn-delete">${trashSvg}</button>
-            <div class="ex-text-tooltip">Remove from list</div>
+            <div class="ex-text-tooltip">Remove/Hide From Library</div>
          </div>
       </div>
     `;
