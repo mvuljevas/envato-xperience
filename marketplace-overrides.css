@@ -57,16 +57,7 @@ html[data-envato-hide-ads="true"] .shared-items_grid_with_sidebar_component__ite
    HIDE DEPRECATED ITEMS LOGIC
    ========================================================================= */
 
-/* Hide original content when setting is ON, EXCEPT if user pressed expand */
-html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable):not(.ex-expanded) {
-    padding: 0 !important;
-    border-bottom: 1px solid #e0e0e0 !important;
-    background: transparent !important;
-}
-
-html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable):not(.ex-expanded) > *:not(.envato-xperience-removed-bar) {
-    display: none !important;
-}
+/* Hide original content via max-height instead of display none to preserve smooth expand/collapse animations */
 
 /* Base state for our injected bar */
 .envato-xperience-removed-bar {
@@ -81,9 +72,9 @@ html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable)
     width: 100%;
 }
 
-/* Unified base state for the bar across collapsed/expanded */
+/* Unified base state for the bar across collapsed/expanded. Forced !important to guarantee survival over generic Envato display none resets */
 html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable) .envato-xperience-removed-bar {
-    display: flex;
+    display: flex !important;
     background-color: #ededed;
     margin: 0; 
     width: 100%;
