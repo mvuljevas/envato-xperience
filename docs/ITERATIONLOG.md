@@ -124,3 +124,17 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Validación: requiere recarga de la extensión y comprobación visual del nuevo stack y de los iconos refinados.
 - Riesgos pendientes: si el botón superior sigue viéndose demasiado pesado, habrá que bajar un poco su altura o ajustar el peso del label.
 - Próximo paso lógico: validar visualmente el nuevo stack y, si queda bien, ya recién entonces commitear el bloque completo de `Support`.
+
+### 2026-03-19 - Carpeta dedicada para iconos UI
+- Objetivo: separar los iconos SVG del sidepanel en una subcarpeta dedicada para escalar mejor la UI sin reestructurar todo el repo a un árbol `assets/` completo.
+- Archivos: `images/icons/*`, `sidepanel.html`, `README.md`.
+- Validación: requiere recarga de la extensión y comprobación visual de que los tres CTAs sigan resolviendo sus assets correctamente.
+- Riesgos pendientes: si más adelante el volumen de assets crece mucho, puede convenir una reestructura mayor; por ahora `images/icons/` mantiene el cambio incremental y limpio.
+- Próximo paso lógico: si esta organización te convence, seguir el mismo patrón para futuros SVG del panel.
+
+### 2026-03-19 - Reestructura controlada de assets UI
+- Objetivo: mover fonts, imágenes y SVGs del panel a un árbol `assets/` para escalar la UI sin tocar los iconos específicos del manifest.
+- Archivos: `assets/fonts/*`, `assets/images/*`, `assets/icons/*`, `manifest.json`, `sidepanel.html`, `sidepanel.css`, `README.md`, `docs/WORKFLOW.md`.
+- Validación: requiere recarga de la extensión y comprobación visual de logos, estado `Outside Envato` y CTAs de `Support`; el smoke debe seguir verde.
+- Riesgos pendientes: quedan carpetas legacy vacías por limpiar (`fonts/`, `images/`) si ya no contienen nada útil.
+- Próximo paso lógico: validar que el árbol nuevo funcione y luego limpiar las carpetas legacy vacías para dejar el repo coherente.

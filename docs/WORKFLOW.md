@@ -19,7 +19,7 @@ La herramienta está estructurada pura y netamente para Manifest V3. El flujo de
 - `sidepanel.html / css / js`: Se encarga exclusivamente de la UI del panel, los toggles de configuración y de pedir a `content.js` que le informe sobre el estatus del entorno.
    - Renderiza una tarjeta de producto compacta con precio, rating, ventas, última actualización y CTA a Live Preview.
    - Expone `Hide Ads` como preferencia sincronizada.
-- `fonts/`: Tipografías locales empaquetadas para la UI del panel, evitando dependencias remotas.
+- `assets/`: Carpeta de assets del panel/UI separada en `fonts/`, `images/` e `icons/`.
 - `image-cache.js`: Gestiona el caché local de imágenes en `IndexedDB` para evitar inflar `chrome.storage.local`.
 - `.env.local.example`: Plantilla local para pruebas autenticadas con Playwright. Usa `ENVATO_TEST_USERNAME`, `ENVATO_TEST_PASSWORD` y `ENVATO_ACCOUNT_URL`.
 - `scripts/playwright.extension.config.cjs` + `scripts/extension-smoke.spec.cjs`: smoke runner local de la extensión usando Playwright y un perfil persistente reutilizable.
@@ -33,7 +33,7 @@ Dado el entorno de las Extensiones de Chrome, no hay un `npm run dev` nativo o l
 3. Activa el **Modo Desarrollador**.
 4. Dale a **Cargar extensión sin empaquetar (Load unpacked)** y apunta a `noframevato`.
 5. **Si modificaste `content.js`, `manifest.json` o `background.js`**: Debes presionar obligatoriamente el ícono de Rellenar / Recargar (la flecha circular en tu tarjetón de extensión en Chrome) y **después refrescar obligatoriamente la pestaña** web (ThemeForest) donde estabas inyectando la prueba.
-6. **Si modificaste `sidepanel.html / css / js`, `fonts/` o `image-cache.js`**: Las modificaciones en el panel visual suelen reflejarse cerrando y volviendo a abrir el panel flotante, pero si no se da el caso, aplica el paso 5 de todas maneras.
+6. **Si modificaste `sidepanel.html / css / js`, `assets/` o `image-cache.js`**: Las modificaciones en el panel visual suelen reflejarse cerrando y volviendo a abrir el panel flotante, pero si no se da el caso, aplica el paso 5 de todas maneras.
 7. **Si modificaste `marketplace-init.js` o `marketplace-overrides.css`**: Recarga la extensión y refresca la pestaña completa. Son assets que corren en `document_start`, así que no basta con cerrar y abrir el panel.
    - Si el problema es de header/banner, inspecciona primero si el nodo objetivo es realmente un spacer. En ThemeForest ya se comprobó que `bannerPlaceholder` también puede envolver el desktop header, así que no debe colapsarse con `height: 0`.
 8. Valida siempre al menos dos superficies:

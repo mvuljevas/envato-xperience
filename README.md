@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="images/Envato Xperience_GitHub.png" alt="Envato Xperience" />
+  <img src="assets/images/Envato Xperience_GitHub.png" alt="Envato Xperience" />
 </p>
 
 # Envato Xperience
@@ -51,6 +51,7 @@ A Chrome extension that seamlessly removes preview iframes from Envato marketpla
     - `marketplace-overrides.css`: Declarative anti-flicker stylesheet that collapses supported Envato ad surfaces immediately when `Hide Ads` is enabled, including shared browse/category sidebars and downloads/account promo rails.
     - `content.js`: Captures Envato metadata on previews, uses Envato `itemId` as the stable product key, fires secure redirects, and injects floating Shadow DOM widgets seamlessly into third-party target showcase websites.
     - `content.css`: Base layout requirements for the floating panel.
+    - `assets/`: Shared UI assets grouped into `fonts/`, `images/`, and `icons/`.
     - `sidepanel.html/css/js`: An aesthetic UI implementation loaded inside an isolated inner iframe.
     - `image-cache.js`: `IndexedDB`-backed image cache with checksum, TTL, and eviction rules for product artwork.
     - `background.js`: Event handler orchestration (relaying extension clicks).
@@ -107,13 +108,15 @@ noframevato/
 ├── .env.local.example  # Local Playwright auth template for manual DOM debugging
 ├── content.js          # Injection logic
 ├── content.css         # Container styles
-├── fonts/              # Local bundled fonts for extension UI
+├── assets/             # Shared UI assets
+│   ├── fonts/          # Local bundled fonts for extension UI
+│   ├── icons/          # Sidepanel/support SVG icons
+│   └── images/         # UI images, logos, and README artwork
 ├── image-cache.js      # IndexedDB-backed image cache
 ├── sidepanel.html      # Panel Structure
 ├── sidepanel.css       # Panel Styles
 ├── sidepanel.js        # Panel Logic
 ├── icons/              # Assets
-├── images/             # UI assets and README artwork
 ├── docs/               # Workflow, roadmap, compliance, cache notes
 └── README.md           # This file
 ```
