@@ -204,3 +204,11 @@ Registro corto de cambios relevantes para evitar pérdida de contexto entre sesi
 - Validación: inspección de markup; `node --check sidepanel.js`.
 - Riesgos pendientes: falta validación visual manual del botón en el panel recargado.
 - Próximo paso lógico: recargar la extensión, confirmar visualmente el botón de `Settings` en `Admin`, y luego definir la primera familia concreta de opciones para `Enhance Envato`.
+
+### 2026-05-09 - Naming docs: noframevato -> envato-xperience
+- Objetivo: alinear la documentación con el nuevo nombre del producto y del repositorio.
+- Archivos: `README.md`, `docs/WORKFLOW.md`.
+- Cambios: se reemplazaron referencias documentales a `noframevato` por `envato-xperience` en la URL de clonación, la instrucción de `Load unpacked` y el árbol de estructura del proyecto.
+- Validación: revisión directa de las referencias actualizadas.
+- Riesgos pendientes: el path local del workspace puede seguir llamándose `noframevato` hasta que se renombre físicamente la carpeta en disco.
+- Próximo paso lógico: decidir si el branding visible del producto debe unificarse también entre `XPerience` y `Xperience` en manifiesto, UI y documentación.

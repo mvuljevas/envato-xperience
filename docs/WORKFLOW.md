@@ -34,7 +34,7 @@ Dado el entorno de las Extensiones de Chrome, no hay un `npm run dev` nativo o l
 1. Modifica o crea el código necesario.
 2. Ve a la vista de plugins: `chrome://extensions/`.
 3. Activa el **Modo Desarrollador**.
-4. Dale a **Cargar extensión sin empaquetar (Load unpacked)** y apunta a `noframevato`.
+4. Dale a **Cargar extensión sin empaquetar (Load unpacked)** y apunta a `envato-xperience`.
 5. **Si modificaste `content.js`, `manifest.json` o `background.js`**: Debes presionar obligatoriamente el ícono de Rellenar / Recargar (la flecha circular en tu tarjetón de extensión en Chrome) y **después refrescar obligatoriamente la pestaña** web (ThemeForest) donde estabas inyectando la prueba.
 6. **Si modificaste `sidepanel.html / css / js`, `assets/` o `image-cache.js`**: Las modificaciones en el panel visual suelen reflejarse cerrando y volviendo a abrir el panel flotante, pero si no se da el caso, aplica el paso 5 de todas maneras.
 7. **Si modificaste `marketplace-init.js` o `marketplace-overrides.css`**: Recarga la extensión y refresca la pestaña completa. Son assets que corren en `document_start`, así que no basta con cerrar y abrir el panel.

@@ -28,11 +28,11 @@ A Chrome extension that enhances the Envato browsing experience with cleaner pre
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/mvuljevas/noframevato.git
+   git clone https://github.com/mvuljevas/envato-xperience.git
    ```
 2. Open Chrome and navigate to `chrome://extensions/`.
 3. Enable **Developer mode** (toggle in top-right corner).
-4. Click **Load unpacked** and select the `noframevato` folder.
+4. Click **Load unpacked** and select the `envato-xperience` folder.
 
 ## Usage
 
@@ -99,7 +99,7 @@ Notes:
 ### File Structure
 
 ```
-noframevato/
+envato-xperience/
 ├── manifest.json       # Extension configuration
 ├── background.js       # Service worker
 ├── envato-shared.js    # Shared helpers for hosts, item IDs, and settings
