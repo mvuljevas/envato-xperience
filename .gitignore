@@ -44,6 +44,8 @@ out/
 coverage/
 .temp/
 .tmp/
+
+# Local smoke/runtime artifacts
 .playwright/
 output/playwright/
 test-results/
