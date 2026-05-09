@@ -1,12 +1,15 @@
 /**
- * Envato Xperience - Content Script
- * 1. Handles frame removal on Envato pages
+ * Envato XPerience - Content Script
+ * 1. Handles preview-to-live navigation on Envato pages
  * 2. Injects the floating in-page sidepanel using Shadow DOM for style isolation
  */
 
 let panelContainer = null;
 let panelWrapperRef = null;
 let panelVisible = false;
+const shared = window.EnvatoXperienceShared;
+const testBridgeEventName = "envato-xperience:test";
+let testBridgeInstalled = false;
 
 /**
  * Creates and injects the floating panel iframe using Shadow DOM
@@ -17,7 +20,7 @@ function createPanel() {
 
   // Create the host for the Shadow DOM
   panelContainer = document.createElement("div");
-  panelContainer.id = "envato-frame-remover-root";
+  panelContainer.id = "envato-xperience-root";
   // Styles handled by content.css (:host)
 
   // Attach Shadow DOM
@@ -54,17 +57,70 @@ function createPanel() {
 /**
  * Toggles the visibility of the floating panel
  */
-function togglePanel() {
+function showPanel() {
   if (!panelContainer) {
     createPanel();
   }
 
-  panelVisible = !panelVisible;
-  if (panelVisible) {
+  panelVisible = true;
+  if (panelWrapperRef) {
     panelWrapperRef.classList.add("visible");
-  } else {
+  }
+}
+
+function hidePanel() {
+  panelVisible = false;
+  if (panelWrapperRef) {
     panelWrapperRef.classList.remove("visible");
   }
+}
+
+function togglePanel() {
+  if (panelVisible) {
+    hidePanel();
+  } else {
+    showPanel();
+  }
+}
+
+function dispatchTestBridgeState(requestId) {
+  document.dispatchEvent(
+    new CustomEvent(`${testBridgeEventName}:result`, {
+      detail: {
+        requestId: requestId || null,
+        panelVisible,
+        hasPanel: Boolean(panelContainer),
+        hideAdsEnabled: document.documentElement.dataset.envatoHideAds === "true",
+      },
+    }),
+  );
+}
+
+function installTestBridge() {
+  if (window !== window.top || testBridgeInstalled) return;
+
+  testBridgeInstalled = true;
+  document.addEventListener(testBridgeEventName, function (event) {
+    const detail = event.detail || {};
+
+    switch (detail.action) {
+      case "openPanel":
+        showPanel();
+        break;
+      case "closePanel":
+        hidePanel();
+        break;
+      case "togglePanel":
+        togglePanel();
+        break;
+      case "getState":
+        break;
+      default:
+        return;
+    }
+
+    dispatchTestBridgeState(detail.requestId);
+  });
 }
 
 /**
@@ -102,16 +158,10 @@ function isEnvatoMarketplaceLogo(url) {
   return typeof url === "string" && /public-assets\.envato-static\.com\/assets\/logos\/marketplaces\//i.test(url);
 }
 
-function extractItemIdFromUrl(url = window.location.href) {
-  if (!url || typeof url !== "string") return "";
-  const match = url.match(/\/item\/[^/]+\/(?:(?:reviews|comments|support)\/)?(\d+)(?:[/?#]|$)/i);
-  return match ? match[1] : "";
-}
-
 /**
- * Logic to remove the Envato preview frame or apply Widget Mode
+ * Opens the live preview destination, optionally preserving product context
  */
-function removeFrame(useWidgetMode = false) {
+function openLivePreview(useWidgetMode = false) {
   try {
     const previewIframe = document.querySelector(
       "iframe.full-screen-preview__frame",
@@ -141,7 +191,7 @@ function removeFrame(useWidgetMode = false) {
       if (document.body.style.marginTop) document.body.style.marginTop = "0px";
     }
   } catch (error) {
-    console.error("[Envato Xperience] Error removing frame:", error);
+    console.error("[Envato XPerience] Error opening live preview:", error);
   }
 }
 
@@ -149,7 +199,7 @@ function removeFrame(useWidgetMode = false) {
  * Extracts metadata from the Envato item details page
  */
 function extractItemDetails() {
-  const itemId = extractItemIdFromUrl();
+  const itemId = shared ? shared.extractItemIdFromUrl() : "";
   let title = normalizeItemTitle(document.querySelector('h1')?.textContent.trim() || document.title);
 
   let imageUrl = '';
@@ -197,6 +247,36 @@ function extractItemDetails() {
   if (!sales) {
       const bodySalesMatch = document.body.innerText.match(/([\d.,]+[kKmM]?)\s*Sales/i);
       if (bodySalesMatch) sales = bodySalesMatch[1];
+  }
+
+  let author = '';
+  const authorEl = document.querySelector('main a[href^="/user/"], main a[href*="themeforest.net/user/"], main a[href*="codecanyon.net/user/"]');
+  if (authorEl) {
+      author = authorEl.textContent.trim().replace(/^By\s+/i, '');
+  }
+  if (!author) {
+      const titleAuthorMatch = document.title.match(/\sby\s(.+?)\s\|\s(?:ThemeForest|CodeCanyon)/i);
+      if (titleAuthorMatch) {
+          author = titleAuthorMatch[1].trim();
+      }
+  }
+
+  let category = '';
+  const titleHeading = document.querySelector('h1');
+  const categoryLinks = Array.from(document.querySelectorAll('a[href*="/category/"]'))
+      .filter((el) => titleHeading
+          ? (el.compareDocumentPosition(titleHeading) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+          : true)
+      .map((el) => el.textContent.trim())
+      .filter((text) => text && !/^home$/i.test(text) && !/^files$/i.test(text) && !/^all items$/i.test(text));
+  if (categoryLinks.length > 0) {
+      category = categoryLinks[categoryLinks.length - 1];
+  }
+
+  let livePreviewUrl = '';
+  const livePreviewEl = document.querySelector('a[href*="/full_screen_preview/"]');
+  if (livePreviewEl && livePreviewEl.href) {
+      livePreviewUrl = livePreviewEl.href;
   }
 
   let rating = '';
@@ -269,14 +349,29 @@ function extractItemDetails() {
   const timeEl = document.querySelector('time.updated, time[itemprop="dateModified"], .last-update-date');
   if (timeEl) lastUpdate = timeEl.textContent.trim();
 
-  return { itemId, title, imageUrl, isHighResImage, price, oldPrice, sales, rating, ratingCount, lastUpdate, isItemPage: true };
+  return {
+    itemId,
+    title,
+    author,
+    category,
+    imageUrl,
+    isHighResImage,
+    price,
+    oldPrice,
+    sales,
+    rating,
+    ratingCount,
+    lastUpdate,
+    livePreviewUrl,
+    isItemPage: true
+  };
 }
 
 /**
  * Extracts product metadata from the native Envato header
  */
 function extractProductInfo() {
-  const currentItemId = extractItemIdFromUrl();
+  const resolvedCurrentItemId = shared ? shared.extractItemIdFromUrl() : "";
   let title = document.title;
   if (title.includes(' - ThemeForest')) title = title.replace(' - ThemeForest', '');
   if (title.includes(' - CodeCanyon')) title = title.replace(' - CodeCanyon', '');
@@ -292,7 +387,7 @@ function extractProductInfo() {
   let itemUrl = '';
   if (titleEl && titleEl.href) itemUrl = titleEl.href;
 
-  const itemId = currentItemId || extractItemIdFromUrl(itemUrl);
+  const itemId = resolvedCurrentItemId || (shared ? shared.extractItemIdFromUrl(itemUrl) : "");
 
   return { itemId, title, buyUrl, itemUrl };
 }
@@ -451,21 +546,24 @@ function injectWidget(info) {
  */
 function initialize() {
   if (window !== window.top) return; // Prevent execution inside iframes
-  
+
+  installTestBridge();
+
   chrome.storage.sync.get(["autoRemove", "widgetMode"], function (result) {
     const autoRemoveEnabled = result.autoRemove !== false; // Default to true if undefined
     const widgetModeEnabled = result.widgetMode === true; // Default to false
-
-    // Only trigger auto-remove on actual preview pages
-    const previewDomains = ['preview.themeforest.net', 'preview.codecanyon.net', 'preview.videohive.net', 'preview.audiojungle.net', 'preview.graphicriver.net', 'preview.photodune.net', 'preview.3docean.net'];
-    const isEnvatoPreviewSite = previewDomains.some(domain => window.location.hostname.includes(domain));
+    const isEnvatoPreviewSite = shared
+      ? shared.isEnvatoPreviewSite(window.location.hostname)
+      : false;
 
     if (autoRemoveEnabled && isEnvatoPreviewSite) {
-      removeFrame(widgetModeEnabled);
+      openLivePreview(widgetModeEnabled);
     } else if (!isEnvatoPreviewSite && widgetModeEnabled) {
       // Check if we are on a theme's site after being redirected
       checkAndInjectWidget();
     }
+
+    window.EnvatoRemovedItems?.initialize?.();
   });
 }
 
@@ -479,12 +577,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       sendResponse({ success: true });
       break;
     case "close_panel":
-      if (panelVisible) togglePanel(); // Toggle off
+      if (panelVisible) hidePanel();
       sendResponse({ success: true });
       break;
     case "remove_frame":
       chrome.storage.sync.get(["widgetMode"], function(result) {
-          removeFrame(result.widgetMode === true);
+          openLivePreview(result.widgetMode === true);
       });
       sendResponse({ success: true });
       break;

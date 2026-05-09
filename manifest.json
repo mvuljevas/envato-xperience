@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Envato Xperience",
+  "name": "Envato XPerience",
   "version": "1.0.0",
-  "description": "Removes Envato preview frames and optionally preserves product context on redirected demos.",
+  "description": "Enhances Envato previews and browsing with cleaner UI, preserved product context, and optional live-demo tools.",
   "homepage_url": "https://www.mvuljevas.com?utm_source=envatoxperience",
   "icons": {
     "16": "icons/icon16.png",
@@ -28,22 +28,31 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "js": ["envato-shared.js", "marketplace-init.js"],
+      "css": ["marketplace-overrides.css"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["envato-shared.js", "image-cache.js", "removed-items.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
   "action": {
-    "default_title": "Toggle Envato Xperience"
+    "default_title": "Open Envato XPerience"
   },
   "web_accessible_resources": [
     {
       "resources": [
         "sidepanel.html",
         "sidepanel.js",
+        "envato-shared.js",
         "image-cache.js",
+        "marketplace-overrides.css",
         "content.css",
-        "images/*",
-        "images/not_envato.png"
+        "assets/fonts/*",
+        "assets/images/*",
+        "assets/icons/*"
       ],
       "matches": ["<all_urls>"]
     }

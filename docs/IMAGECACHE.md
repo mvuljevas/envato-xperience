@@ -4,7 +4,7 @@
 
 `IndexedDB` is the browser's built-in structured database. Unlike `chrome.storage.local`, it is designed for larger datasets and can safely store records, metadata, and binary blobs such as images.
 
-For Envato Xperience, this makes it a better fit for cached product previews:
+For Envato XPerience, this makes it a better fit for cached product previews:
 - `chrome.storage.sync`: settings only
 - `chrome.storage.local`: small runtime context only
 - `IndexedDB`: image blobs and image metadata

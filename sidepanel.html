@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <title>Envato Xperience</title>
+    <title>Envato XPerience</title>
     <link rel="stylesheet" href="sidepanel.css" />
   </head>
 
@@ -12,12 +12,12 @@
         <button id="closePanel" class="close-btn" title="Close Panel">
           &times;
         </button>
-        <img src="images/envato-logo-dark.svg" alt="Envato Logo" class="logo" />
-        <h1>Envato Xperience</h1>
+        <img src="assets/images/envato-logo-dark.svg" alt="Envato Logo" class="logo" />
+        <h1>Envato XPerience</h1>
         <div class="tabs">
           <div class="tab-glider"></div>
           <button class="tab-btn active" data-tab="action">Status</button>
-          <button class="tab-btn" data-tab="settings">Settings</button>
+          <button class="tab-btn" data-tab="admin">Admin</button>
         </div>
       </header>
 
@@ -25,131 +25,234 @@
         <!-- Action Tab -->
         <div id="actionTab" class="tab-panel active">
           <!-- Normal UI -->
-          <div id="envatoControls" style="text-align: center;">
-            <p class="status-text" id="envatoDomainText" style="margin-bottom: 8px; font-weight: 600; color: #6c757d; font-size: 14px;">
-              Envato Preview detected!
+          <div id="envatoControls" class="envato-controls">
+            <p class="status-text contextual-heading hidden" id="envatoDomainText">
+              <span id="envatoDomainPrefix" class="contextual-heading-prefix">Viewing Product on</span>
+              <span id="envatoDomainSite" class="contextual-heading-site">ThemeForest</span>
             </p>
             
-            <div class="card" style="padding: 16px;">
-              <!-- Image Banner (Edge to Top-Edge) -->
-              <div class="image-wrapper" style="margin: -16px -16px 16px -16px; border-bottom: 1px solid #f1f3f5; background: #f8f9fa;">
-                  <img id="itemDetailsImage" src="" style="width: 100%; display: none; vertical-align: middle; object-fit: cover;" />
+            <div class="card context-card context-card-shell">
+              <div class="image-wrapper context-card-media">
+                  <img id="itemDetailsImage" src="" class="context-card-image" />
               </div>
 
-              <!-- Initial Loading Text (Visible before fetch completes) -->
-              <p class="status-text" id="loadingText" style="color: #6fab35; font-size: 14px; font-weight: 500; margin-bottom: 16px; line-height: 1.4; text-align: center;">
-                Loading product info...
-              </p>
+              <div id="statusEmptyState" class="status-state">
+                <p id="statusStateEyebrow" class="state-eyebrow">Marketplace Context</p>
+                <h2 id="statusStateTitle" class="state-title">Product insights appear here</h2>
+                <p id="statusStateBody" class="state-body">
+                  Open any item page to load pricing, rating, sales, and update details.
+                </p>
+                <p id="statusStateHelper" class="state-helper">
+                  Envato XPerience is ready when you are.
+                </p>
+                <div class="state-pills">
+                  <span id="autoRemoveStatus" class="state-pill">Auto Remove On</span>
+                  <span id="widgetStatus" class="state-pill">Floating Widget Off</span>
+                  <span id="hideAdsStatus" class="state-pill">Hide Ads Off</span>
+                  <span id="hideDeprecatedStatus" class="state-pill">Hide Removed Off</span>
+                </div>
+              </div>
               
               <!-- Item Details Container -->
-              <div id="itemDetailsContainer" class="hidden">
-                 
-                 <!-- Header Row (Title & Price) -->
-                 <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 12px;">
-                     <!-- Product Title -->
-                     <p class="status-text" id="productTitleText" style="color: #262626; font-family: 'Arial Narrow', 'Helvetica Neue', sans-serif; font-size: 18px; font-weight: 300; margin: 0; line-height: 1.25; text-align: left; flex: 1;">
-                     </p>
-                     
-                     <!-- Price -->
-                     <div id="itemDetailsPrice" style="font-size: 24px; font-weight: 700; color: #495057; line-height: 1.1; letter-spacing: -0.5px; white-space: nowrap;">
-                        --
-                     </div>
-                 </div>
+              <div id="itemDetailsContainer" class="product-card hidden">
+                <div class="product-card-head">
+                  <div class="product-card-copy">
+                    <p class="status-text product-title" id="productTitleText"></p>
+                    <p id="productMetaText" class="product-meta hidden"></p>
+                  </div>
+                  <div id="itemDetailsPrice" class="product-price">
+                    --
+                  </div>
+                </div>
 
-                 <!-- E-commerce Data -->
-                 <div style="text-align: left;">
-                     <!-- Rating Row -->
-                     <div id="itemDetailsRating" style="display: flex; align-items: center; margin-bottom: 12px;">
-                     </div>
-                     
-                     <!-- Metadata Footer (Sales & Updated) -->
-                     <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f1f3f5; padding-top: 12px; margin-top: 4px;">
-                         <div id="itemDetailsSales" style="color: #495057; font-size: 13px; display: flex; align-items: center; gap: 6px;">
-                         </div>
-                         <div id="itemDetailsUpdate" style="color: #868e96; font-size: 12px;">
-                         </div>
-                     </div>
-                 </div>
+                <div class="product-card-info">
+                  <div id="itemDetailsRating" class="product-rating-row"></div>
+                  <div id="itemDetailsSales" class="product-sales-row"></div>
+                </div>
+
+                <div class="product-card-footer">
+                  <div id="itemDetailsUpdate" class="product-update"></div>
+                  <a id="itemDetailsPreview" class="product-preview-btn hidden" target="_blank" rel="noopener noreferrer">Live Preview</a>
+                </div>
               </div>
             </div>
 
-              <button id="removeNow" class="main-action">Remove Frame</button>
-            </div>
+            <button id="removeNow" class="main-action">Open Live Preview</button>
+          </div>
 
           <!-- Not Envato UI -->
           <div
             id="notEnvatoMessage"
             class="not-envato-container hidden"
           >
-            <img src="images/not_envato.png" alt="Not an Envato Preview Page" />
-            <h2>Not an Envato Preview Page</h2>
+            <img src="assets/images/not_envato.png" alt="Not an Envato Preview Page" />
+            <h2>Outside Envato</h2>
             <p>
-              This extension only works on ThemeForest and CodeCanyon preview
-              pages.
+              Open an Envato preview, item, or marketplace page to activate the
+              browsing enhancements and product context tools.
             </p>
           </div>
         </div>
 
-        <!-- Settings Tab -->
-        <div id="settingsTab" class="tab-panel">
-          <h3 class="settings-header">General Settings</h3>
-          <div class="card control-group" style="margin-bottom: 5px;">
-            <label for="autoRemove">Auto Remove</label>
-            <label class="switch">
-              <input type="checkbox" id="autoRemove" />
-              <span class="slider"></span>
-            </label>
-          </div>
-          <div class="card control-group">
-            <label for="widgetMode">Floating Widget</label>
-            <label class="switch">
-              <input type="checkbox" id="widgetMode" />
-              <span class="slider"></span>
-            </label>
+        <!-- Admin Tab -->
+        <div id="adminTab" class="tab-panel">
+          <div id="adminMainView">
+            <h3 class="settings-header">Core Experience</h3>
+            <div class="settings-controls">
+              <div class="card control-group">
+                <div class="control-copy">
+                  <span class="control-title">Auto Remove</span>
+                  <span class="control-caption">Open the hosted demo directly from Envato preview pages.</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="adminAutoRemove" data-setting="autoRemove" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="card control-group">
+                <div class="control-copy">
+                  <span class="control-title">Floating Widget</span>
+                  <span class="control-caption">Keep key product actions available after redirecting to the live demo.</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="adminWidgetMode" data-setting="widgetMode" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <h3 class="settings-header">Enhance Envato</h3>
+            <div class="settings-controls">
+              <div class="card control-group">
+                <div class="control-copy">
+                  <span class="control-title">Hide Ads</span>
+                  <span class="control-caption">Suppress supported promotional surfaces and noisy cross-sells.</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="adminHideAds" data-setting="hideAds" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="card control-group">
+                <div class="control-copy">
+                  <span class="control-title">Hide Removed Items</span>
+                  <span class="control-caption">Compact unavailable downloads into a cleaner action bar.</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="adminHideDeprecated" data-setting="hideDeprecated" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="admin-bottom-actions">
+              <button
+                id="openAdminSettings"
+                class="admin-icon-button"
+                type="button"
+                title="Settings"
+                aria-label="Settings"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M19.14 12.94a7.43 7.43 0 0 0 .05-.94 7.43 7.43 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.3 7.3 0 0 0-1.63-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54a7.3 7.3 0 0 0-1.63.94l-2.39-.96a.5.5 0 0 0-.6.22L2.66 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.43 7.43 0 0 0-.05.94c0 .32.02.63.05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96c.5.38 1.05.7 1.63.94l.36 2.54a.5.5 0 0 0 .5.42h3.84a.5.5 0 0 0 .5-.42l.36-2.54c.58-.24 1.13-.56 1.63-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.25A3.25 3.25 0 1 1 12 8.75a3.25 3.25 0 0 1 0 6.5Z"></path>
+                </svg>
+              </button>
+            </div>
+
           </div>
 
-          <h3 class="settings-header">About</h3>
-          <div class="card about-info">
-            <p><strong>Version:</strong> 1.0.0</p>
-            <p><strong>Author:</strong> Mauricio Vuljevas</p>
-            <p>
-              Removes Envato preview frames and preserves product context when
-              Floating Widget is enabled.
-            </p>
+          <div id="adminSettingsView" class="hidden">
+            <div class="admin-settings-header">
+              <button
+                id="closeAdminSettings"
+                class="admin-back-button"
+                type="button"
+                aria-label="Back to Admin"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+                <span>Admin</span>
+              </button>
+              <p class="admin-settings-kicker">Settings</p>
+            </div>
+
+            <h3 class="settings-header">About</h3>
+            <div class="card about-info">
+              <p><strong>Version:</strong> 1.0.0</p>
+              <p><strong>Author:</strong> Mauricio Vuljevas</p>
+              <p>
+                Enhances the Envato browsing experience with cleaner previews, preserved product context, and optional interface improvements.
+              </p>
+            </div>
+
+            <h3 class="settings-header">Support</h3>
+            <div class="card support-card">
+              <p class="support-copy">
+                I am building Envato XPerience and other free tools independently while trying to get through a very difficult financial season. I am working on several things at once to turn this around, so if this project has helped you, your support genuinely helps me keep building.
+              </p>
+              <div class="support-actions">
+                <a
+                  class="support-button support-button-primary"
+                  href="https://github.com/sponsors/mvuljevas"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                    <img
+                      class="support-button-icon support-button-icon-image support-button-icon-sponsor"
+                      src="assets/icons/icon-sponsor.svg"
+                      alt=""
+                    />
+                  <span>Sponsor</span>
+                </a>
+                <div class="support-actions-secondary">
+                  <a
+                    class="support-button support-button-coffee"
+                    href="https://buymeacoffee.com/mvuljevas"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      class="support-button-icon support-button-icon-image support-button-icon-coffee"
+                      src="assets/icons/icon-buymeacoffee.svg"
+                      alt=""
+                    />
+                    <span>Coffee</span>
+                  </a>
+                  <a
+                    class="support-button support-button-paypal"
+                    href="https://www.paypal.com/ncp/payment/9KC9A76D7TLCA"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <img
+                      class="support-button-icon support-button-icon-image support-button-icon-paypal"
+                      src="assets/icons/icon-paypal.svg"
+                      alt=""
+                    />
+                    <span>PayPal</span>
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       <div class="footer-banner">
-        <a
-          href="https://github.com/mvuljevas/noframevato"
-          target="_blank"
-          class="github-link"
-          title="View on GitHub"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
-            <path
-              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
-            />
-          </svg>
-        </a>
         <p>
-          Crafted by
+          Copyright &copy; 2026
           <a
-            href="https://www.mvuljevas.com?utm_source=envatoxperience"
+            href="https://www.mvuljevas.com"
             target="_blank"
-            >Mauricio Vuljevas</a
+            rel="noopener noreferrer"
+            >mvuljevas.com</a
           >
         </p>
       </div>
     </div>
 
+    <script src="envato-shared.js"></script>
     <script src="image-cache.js"></script>
     <script src="sidepanel.js"></script>
   </body>

@@ -1,0 +1,11 @@
+{
+  "name": "envato-xperience",
+  "private": true,
+  "scripts": {
+    "smoke:extension": "playwright test --config=scripts/playwright.extension.config.cjs",
+    "smoke:extension:headed": "playwright test --config=scripts/playwright.extension.config.cjs --headed"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

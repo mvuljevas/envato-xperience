@@ -1,0 +1,343 @@
+html[data-envato-hide-ads="true"] #market-banner,
+html[data-envato-hide-ads="true"] .shared-banner_component__bannerTop,
+html[data-envato-hide-ads="true"] .headerstrip-wrapper,
+html[data-envato-hide-ads="true"] .headerstrip,
+html[data-envato-hide-ads="true"] .elements-nav__container,
+html[data-envato-hide-ads="true"] .elements-nav__main-link,
+html[data-envato-hide-ads="true"] .shared-global_header-elements_nav_component__root,
+html[data-envato-hide-ads="true"] .shared-global_header-elements_nav_component__mainLink,
+html[data-envato-hide-ads="true"] .cross-sell,
+html[data-envato-hide-ads="true"] .home-elements_items_block_component__root,
+html[data-envato-hide-ads="true"] .shared-elements-search_block_component__root,
+html[data-envato-hide-ads="true"] .box--topbar--hosting-partner,
+html[data-envato-hide-ads="true"] .box--hard-top--hosting-partner,
+html[data-envato-hide-ads="true"] .box--hosting-partner-notice,
+html[data-envato-hide-ads="true"] .box--top-bar--download-immediately,
+html[data-envato-hide-ads="true"] .box--hard-top--download-immediately,
+html[data-envato-hide-ads="true"] .download__promotions,
+html[data-envato-hide-ads="true"] .shared-items_grid_with_sidebar_component__sidebar,
+html[data-envato-hide-ads="true"] .shared-global_footer-cross_sell_component__root,
+html[data-envato-hide-ads="true"] .shared-global_footer-cross_sell_banner_component__root {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  height: 0 !important;
+  min-height: 0 !important;
+  max-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html[data-envato-hide-ads="true"] .shared-global_header-global_header_component__bannerPlaceholder {
+  padding-top: 0 !important;
+}
+
+html.fixed-layout[data-envato-hide-ads="true"] #content > .grid-container.h-mb3 > div > .sidebar-s.sidebar-right {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+html.fixed-layout[data-envato-hide-ads="true"] #content > .grid-container.h-mb3 > div > .content-l {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+html[data-envato-hide-ads="true"] .shared-items_grid_with_sidebar_component__itemsGrid {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* =========================================================================
+   HIDE DEPRECATED ITEMS LOGIC
+   ========================================================================= */
+
+/* Hide original content via max-height instead of display none to preserve smooth expand/collapse animations */
+
+/* Base state for our injected bar */
+.envato-xperience-removed-bar {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    background-color: transparent;
+    gap: 16px;
+    min-height: 48px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Unified base state for the bar across collapsed/expanded. Forced !important to guarantee survival over generic Envato display none resets */
+html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable) .envato-xperience-removed-bar {
+    display: flex !important;
+    background-color: #ededed;
+    margin: 0; 
+    width: 100%;
+}
+
+/* Base properties for the item container */
+html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable) {
+    padding: 0 !important; /* Neutralize native padding so the bar spans fully */
+    border-bottom: 1px solid #e0e0e0 !important;
+    background: transparent !important;
+    box-sizing: border-box;
+}
+
+/* Bar state when expanded (space underneath) */
+html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable).ex-expanded .envato-xperience-removed-bar {
+    border-bottom: 1px solid #d1d8df !important;
+    border-top: solid thin #d0d0d0 !important;
+    background-color: #e4e6e8 !important; 
+    margin-bottom: 0px !important;
+}
+
+/* Base properties for the transition on the inner wrapper */
+html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable) .ex-original-content {
+    transition: max-height 0.35s cubic-bezier(0.165, 0.84, 0.44, 1), padding 0.35s cubic-bezier(0.165, 0.84, 0.44, 1), opacity 0.3s ease;
+    overflow: hidden !important;
+    border-bottom: solid thin #d0d0d0;
+    box-sizing: border-box;
+    padding-left: 20px; /* Restore horizontal padding */
+    padding-right: 20px;
+    background-color: #e4e6e8; /* Emphasize that this block is unavailable */
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Collapsed state wrapper: hide content */
+html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable):not(.ex-expanded) .ex-original-content {
+    max-height: 0;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    opacity: 0;
+}
+
+/* Expanded state wrapper: reveal content */
+html[data-envato-hide-deprecated="true"] li.download:has(.download__unavailable).ex-expanded .ex-original-content {
+    max-height: 500px;
+    padding-top: 20px !important;    /* Restores vertical spacing below the bar */
+    padding-bottom: 20px !important; /* Restores vertical spacing at the bottom */
+    opacity: 1;
+}
+
+/* Structural elements of the bar */
+.ex-removed-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: #8c9096;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.ex-removed-line {
+    flex: 1;
+    height: 1px;
+    background-color: #d1d8df;
+}
+
+.ex-removed-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.ex-btn {
+    background-color: #ffffff !important;
+    border: 1px solid #caced1 !important;
+    border-radius: 4px !important;
+    padding: 6px !important;
+    cursor: pointer !important;
+    color: #6c757d !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.2s !important;
+    width: 32px !important;
+    height: 32px !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+    outline: none !important;
+    text-decoration: none !important;
+}
+
+.ex-btn:hover {
+    background-color: #f4f5f7 !important;
+    border-color: #b0b8c0 !important;
+    color: #333 !important;
+}
+
+/* Active / Pressed state without blue */
+.ex-btn.ex-active, .ex-btn:active {
+    background-color: #e5e8eb !important;
+    border-color: #a0aab2 !important;
+    color: #222 !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06) !important;
+    outline: none !important;
+}
+
+.ex-btn:focus {
+    outline: none !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+}
+
+.ex-btn-delete:hover {
+    background-color: #ffe3e3 !important;
+    border-color: #ffa8a8 !important;
+    color: #e03131 !important;
+}
+
+.ex-btn.ex-disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    background-color: transparent !important;
+    border-color: #d0d0d0 !important;
+    color: #b0b8c0 !important;
+    box-shadow: none !important;
+}
+
+.ex-btn.ex-disabled:hover {
+    background-color: transparent !important;
+    border-color: #d0d0d0 !important;
+    color: #b0b8c0 !important;
+}
+
+/* Tooltip Styling */
+.ex-tooltip-wrapper {
+    position: relative;
+    display: flex;
+}
+
+/* Text Tooltips for Action Buttons */
+.ex-action-wrapper {
+    position: relative;
+    display: flex;
+}
+
+.ex-text-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) translateY(4px);
+    background-color: #ffffff;
+    color: #222222;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+    pointer-events: none;
+    z-index: 105;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+    border: 1px solid #d1d8df;
+}
+
+.ex-text-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: calc(50% - 5px);
+    width: 10px;
+    height: 10px;
+    background: #ffffff;
+    border-bottom: 1px solid #d1d8df;
+    border-right: 1px solid #d1d8df;
+    transform: rotate(45deg);
+}
+
+.ex-action-wrapper:hover > .ex-text-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+/* The info button gets active styles while hovering the wrapper */
+.ex-tooltip-wrapper:hover .ex-btn-info {
+    background-color: #e5e8eb;
+    border-color: #a0aab2;
+    color: #222;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.ex-tooltip {
+    position: absolute;
+    bottom: calc(100% + 12px);
+    right: 50%;
+    transform: translateX(50%) translateY(10px);
+    background: #ffffff;
+    border: 1px solid #d1d8df;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    padding: 16px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    z-index: 100;
+    pointer-events: none;
+    box-sizing: border-box;
+}
+
+.ex-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    right: calc(50% - 6px);
+    width: 10px;
+    height: 10px;
+    background: #fff;
+    border-bottom: 1px solid #d1d8df;
+    border-right: 1px solid #d1d8df;
+    transform: rotate(45deg);
+}
+
+.ex-tooltip-wrapper:hover .ex-tooltip {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(50%) translateY(0);
+}
+
+.ex-tooltip-img-wrapper {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+    background: #f7f8f9;
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e1e8ed;
+}
+
+.ex-tooltip-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ex-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f1f3f5;
+}
+
+.ex-tooltip-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #262626;
+    line-height: 1.4;
+    text-align: center;
+}
